@@ -1,8 +1,22 @@
-requireAuth();
+// ============================================
+// لوحة التحكم - متصلة بـ Firebase (نسخة مُصلحة)
+// ============================================
 
 let quill;
 
-document.addEventListener('DOMContentLoaded', function(){
+// ⚠️ التعديل الأهم: ننتظر تأكيد حالة تسجيل الدخول قبل أي شيء
+auth.onAuthStateChanged(function(user){
+  if(!user){
+    // المستخدم غير مسجل دخوله، أعده لصفحة الدخول
+    window.location.href = 'login.html';
+  } else {
+    // المستخدم مسجل دخوله بنجاح، الآن ابدأ تحميل لوحة التحكم
+    initAdminPanel();
+  }
+});
+
+function initAdminPanel(){
+  // تهيئة محرر Quill
   const toolbarOptions = [
     [{ 'header': [1, 2, 3, false] }],
     ['bold', 'italic', 'underline', 'strike'],
@@ -30,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function(){
       switchTab(this.dataset.tab);
     });
   });
-});
+}
 
 function switchTab(tabName){
   document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
@@ -47,40 +61,50 @@ function switchTab(tabName){
 }
 
 async function loadDashboard(){
-  const articles = await getArticles();
-  document.getElementById('statTotal').textContent = articles.length;
-  document.getElementById('statPublished').textContent = articles.filter(a=>a.status==='published').length;
-  document.getElementById('statDraft').textContent = articles.filter(a=>a.status==='draft').length;
+  try{
+    const articles = await getArticles();
+    document.getElementById('statTotal').textContent = articles.length;
+    document.getElementById('statPublished').textContent = articles.filter(a=>a.status==='published').length;
+    document.getElementById('statDraft').textContent = articles.filter(a=>a.status==='draft').length;
 
-  const recent = articles.slice(0,5);
-  document.getElementById('recentArticlesTable').innerHTML = recent.map(a=>`
-    <tr>
-      <td>${a.title}</td>
-      <td>${a.category}</td>
-      <td>${a.date}</td>
-      <td><span class="badge badge-${a.status==='published'?'published':'draft'}">${a.status==='published'?'منشور':'مسودة'}</span></td>
-    </tr>
-  `).join('') || '<tr><td colspan="4" style="text-align:center;">لا توجد مقالات</td></tr>';
+    const recent = articles.slice(0,5);
+    document.getElementById('recentArticlesTable').innerHTML = recent.map(a=>`
+      <tr>
+        <td>${a.title}</td>
+        <td>${a.category}</td>
+        <td>${a.date}</td>
+        <td><span class="badge badge-${a.status==='published'?'published':'draft'}">${a.status==='published'?'منشور':'مسودة'}</span></td>
+      </tr>
+    `).join('') || '<tr><td colspan="4" style="text-align:center;">لا توجد مقالات</td></tr>';
+  }catch(err){
+    console.error('خطأ في تحميل لوحة البيانات:', err);
+    alert('حدث خطأ أثناء تحميل البيانات: ' + err.message);
+  }
 }
 
 async function loadArticlesTable(){
   const tableBody = document.getElementById('articlesTable');
   tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</td></tr>';
 
-  const articles = await getArticles();
-  tableBody.innerHTML = articles.map(a=>`
-    <tr>
-      <td>${a.title}</td>
-      <td>${a.category}</td>
-      <td>${a.author}</td>
-      <td>${a.date}</td>
-      <td><span class="badge badge-${a.status==='published'?'published':'draft'}">${a.status==='published'?'منشور':'مسودة'}</span></td>
-      <td class="table-actions">
-        <button class="icon-btn edit" onclick="editArticle('${a.id}')"><i class="fas fa-edit"></i></button>
-        <button class="icon-btn delete" onclick="confirmDelete('${a.id}')"><i class="fas fa-trash"></i></button>
-      </td>
-    </tr>
-  `).join('') || '<tr><td colspan="6" style="text-align:center;padding:40px;">لا توجد مقالات. أضف مقالك الأول!</td></tr>';
+  try{
+    const articles = await getArticles();
+    tableBody.innerHTML = articles.map(a=>`
+      <tr>
+        <td>${a.title}</td>
+        <td>${a.category}</td>
+        <td>${a.author}</td>
+        <td>${a.date}</td>
+        <td><span class="badge badge-${a.status==='published'?'published':'draft'}">${a.status==='published'?'منشور':'مسودة'}</span></td>
+        <td class="table-actions">
+          <button class="icon-btn edit" onclick="editArticle('${a.id}')"><i class="fas fa-edit"></i></button>
+          <button class="icon-btn delete" onclick="confirmDelete('${a.id}')"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>
+    `).join('') || '<tr><td colspan="6" style="text-align:center;padding:40px;">لا توجد مقالات. أضف مقالك الأول!</td></tr>';
+  }catch(err){
+    console.error('خطأ في تحميل المقالات:', err);
+    tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;padding:30px;">خطأ: ${err.message}</td></tr>`;
+  }
 }
 
 function resetEditorForm(){
@@ -91,7 +115,7 @@ function resetEditorForm(){
   document.getElementById('artCategory').value = 'تأسيس';
   document.getElementById('artStatus').value = 'published';
   document.getElementById('artExcerpt').value = '';
-  quill.setContents([]);
+  if(quill) quill.setContents([]);
 }
 
 async function editArticle(id){
@@ -140,7 +164,8 @@ async function saveArticleForm(){
     }
     switchTab('articles');
   }catch(err){
-    alert('حدث خطأ: ' + err.message);
+    console.error(err);
+    alert('حدث خطأ أثناء الحفظ: ' + err.message);
   }finally{
     saveBtn.disabled = false;
     saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ المقال';
@@ -149,9 +174,13 @@ async function saveArticleForm(){
 
 async function confirmDelete(id){
   if(confirm('هل أنت متأكد من حذف هذا المقال؟ لا يمكن التراجع عن هذا الإجراء.')){
-    await deleteArticle(id);
-    loadArticlesTable();
-    loadDashboard();
+    try{
+      await deleteArticle(id);
+      loadArticlesTable();
+      loadDashboard();
+    }catch(err){
+      alert('خطأ أثناء الحذف: ' + err.message);
+    }
   }
 }
 
@@ -187,4 +216,9 @@ function importData(event){
     }
   };
   reader.readAsText(file);
+}
+
+// دالة تسجيل الخروج (مستخدمة من زر Logout في admin.html)
+function logout(){
+  auth.signOut().then(()=> window.location.href = 'login.html');
 }
