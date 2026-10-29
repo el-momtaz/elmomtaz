@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90">
+  <defs>
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFC107"/>
+      <stop offset="100%" stop-color="#FF8F00"/>
+    </linearGradient>
+  </defs>
+  <circle cx="45" cy="45" r="40" fill="#0D1B2A"/>
+  <circle cx="45" cy="45" r="40" fill="none" stroke="#FFC107" stroke-width="3"/>
+  <path d="M50 15 L25 48 H42 L38 75 L65 40 H48 Z" fill="url(#boltGrad)"/>
+  <text x="100" y="42" font-family="Tajawal, Arial, sans-serif" font-size="30" font-weight="800" fill="#0D1B2A">الممتاز</text>
+  <text x="100" y="68" font-family="Tajawal, Arial, sans-serif" font-size="15" font-weight="600" fill="#FF8F00">للأعمال الكهربائية</text>
+</svg>

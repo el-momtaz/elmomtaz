@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | الممتاز</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="logo"><img src="assets/logo.svg" alt="الممتاز"></div>
+    <nav class="admin-nav">
+      <a href="#dashboard" class="nav-item active" data-tab="dashboard"><i class="fas fa-th-large"></i> لوحة البيانات</a>
+      <a href="#articles" class="nav-item" data-tab="articles"><i class="fas fa-newspaper"></i> المقالات</a>
+      <a href="#new-article" class="nav-item" data-tab="new-article"><i class="fas fa-plus-circle"></i> مقال جديد</a>
+      <a href="#settings" class="nav-item" data-tab="settings"><i class="fas fa-cog"></i> الإعدادات</a>
+      <a href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> عرض الموقع</a>
+      <a href="#" onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+
+    <div class="tab-content" id="tab-dashboard">
+      <div class="admin-topbar"><h1>لوحة البيانات</h1></div>
+      <div class="admin-cards">
+        <div class="admin-stat"><h3 id="statTotal">0</h3><p><i class="fas fa-newspaper"></i> إجمالي المقالات</p></div>
+        <div class="admin-stat"><h3 id="statPublished">0</h3><p><i class="fas fa-check-circle"></i> منشورة</p></div>
+        <div class="admin-stat"><h3 id="statDraft">0</h3><p><i class="fas fa-edit"></i> مسودات</p></div>
+      </div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead><tr><th>العنوان</th><th>التصنيف</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+          <tbody id="recentArticlesTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-articles" style="display:none;">
+      <div class="admin-topbar">
+        <h1>إدارة المقالات</h1>
+        <button class="btn btn-primary" onclick="switchTab('new-article')"><i class="fas fa-plus"></i> مقال جديد</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead><tr><th>العنوان</th><th>التصنيف</th><th>الكاتب</th><th>التاريخ</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+          <tbody id="articlesTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-new-article" style="display:none;">
+      <div class="admin-topbar"><h1 id="editorTitle">مقال جديد</h1></div>
+      <div class="editor-card">
+        <input type="hidden" id="articleId">
+        <div class="form-group">
+          <label>عنوان المقال</label>
+          <input type="text" id="artTitle" placeholder="اكتب عنوان المقال هنا">
+        </div>
+        <div class="form-group">
+          <label>رابط الصورة البارزة</label>
+          <input type="text" id="artImage" placeholder="https://example.com/image.jpg">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="form-group">
+            <label>التصنيف</label>
+            <select id="artCategory">
+              <option>تأسيس</option>
+              <option>تشطيب</option>
+              <option>صيانة</option>
+              <option>نصائح عامة</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>الحالة</label>
+            <select id="artStatus">
+              <option value="published">منشور</option>
+              <option value="draft">مسودة</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>وصف مختصر (SEO)</label>
+          <textarea id="artExcerpt" rows="3" placeholder="وصف مختصر وجذاب للمقال"></textarea>
+        </div>
+        <div class="form-group">
+          <label>محتوى المقال</label>
+          <div id="editor-container"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:20px;">
+          <button class="btn btn-primary" onclick="saveArticleForm()"><i class="fas fa-save"></i> حفظ المقال</button>
+          <button class="btn btn-dark" onclick="switchTab('articles')" type="button">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-settings" style="display:none;">
+      <div class="admin-topbar"><h1>الإعدادات</h1></div>
+      <div class="editor-card">
+        <h3 style="margin-bottom:20px;color:var(--primary);">تصدير/استيراد البيانات</h3>
+        <div style="display:flex;gap:15px;">
+          <button class="btn btn-dark" onclick="exportData()"><i class="fas fa-download"></i> تصدير المقالات (JSON)</button>
+          <label class="btn btn-primary" style="cursor:pointer;">
+            <i class="fas fa-upload"></i> استيراد مقالات
+            <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(event)">
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="assets/firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/articles-store.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

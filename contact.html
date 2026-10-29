@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اتصل بنا | شركة الممتاز للأعمال الكهربائية - جازان</title>
+<meta name="description" content="تواصل مع شركة الممتاز للأعمال الكهربائية في جازان عبر الهاتف أو واتساب: 966508980434+">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header>
+  <div class="container navbar">
+    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="الممتاز"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">الرئيسية</a>
+      <a href="about.html">من نحن</a>
+      <a href="services.html">خدماتنا</a>
+      <a href="articles.html">المقالات</a>
+      <a href="contact.html" class="active">اتصل بنا</a>
+    </nav>
+    <a href="tel:+966508980434" class="nav-phone"><i class="fas fa-phone"></i> 0508980434</a>
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+  </div>
+</header>
+
+<div class="page-header">
+  <div class="container">
+    <h1>اتصل بنا</h1>
+    <div class="breadcrumb"><a href="index.html">الرئيسية</a> / <span>اتصل بنا</span></div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <h3 style="margin-bottom:30px;font-size:24px;">معلومات التواصل</h3>
+      <div class="contact-item">
+        <div class="icon"><i class="fas fa-phone"></i></div>
+        <div><h4>اتصل بنا</h4><a href="tel:+966508980434">966 50 898 0434+</a></div>
+      </div>
+      <div class="contact-item">
+        <div class="icon"><i class="fab fa-whatsapp"></i></div>
+        <div><h4>واتساب</h4><a href="https://wa.me/966508980434">966 50 898 0434+</a></div>
+      </div>
+      <div class="contact-item">
+        <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div><h4>موقعنا</h4><p>جازان، المملكة العربية السعودية</p></div>
+      </div>
+      <div class="contact-item">
+        <div class="icon"><i class="fas fa-clock"></i></div>
+        <div><h4>ساعات العمل</h4><p>يومياً من 8 صباحاً حتى 10 مساءً</p></div>
+      </div>
+      <div class="contact-item">
+        <div class="icon"><i class="fas fa-envelope"></i></div>
+        <div><h4>البريد الإلكتروني</h4><p>info@alemtiaz-electric.com</p></div>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <h3 style="margin-bottom:25px;color:var(--primary);font-size:22px;">أرسل لنا رسالة</h3>
+      <form id="contactForm" onsubmit="return sendWhats(event)">
+        <div class="form-group">
+          <label>الاسم الكامل</label>
+          <input type="text" id="cname" required placeholder="أدخل اسمك">
+        </div>
+        <div class="form-group">
+          <label>رقم الجوال</label>
+          <input type="tel" id="cphone" required placeholder="05xxxxxxxx">
+        </div>
+        <div class="form-group">
+          <label>نوع الخدمة</label>
+          <select id="cservice">
+            <option>تأسيس كهرباء</option>
+            <option>تشطيب كهرباء</option>
+            <option>صيانة وإصلاح</option>
+            <option>أخرى</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>تفاصيل الطلب</label>
+          <textarea rows="5" id="cmsg" placeholder="اكتب تفاصيل طلبك هنا..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+          <i class="fab fa-whatsapp"></i> إرسال الطلب عبر واتساب
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="container map-wrap">
+    <iframe src="https://maps.google.com/maps?q=جازان&t=&z=11&ie=UTF8&iwloc=&output=embed" width="100%" height="400" style="border:0;" allowfullscreen loading="lazy"></iframe>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-bottom">
+    <p>© 2024 شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+
+<a href="https://wa.me/966508980434" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<script src="js/main.js"></script>
+<script>
+function sendWhats(e){
+  e.preventDefault();
+  const name=document.getElementById('cname').value;
+  const phone=document.getElementById('cphone').value;
+  const service=document.getElementById('cservice').value;
+  const msg=document.getElementById('cmsg').value;
+  const text=`مرحباً، أنا ${name}%0aرقم الجوال: ${phone}%0aنوع الخدمة: ${service}%0aالتفاصيل: ${msg}`;
+  window.open(`https://wa.me/966508980434?text=${text}`,'_blank');
+  return false;
+}
+</script>
+</body>
+</html>
