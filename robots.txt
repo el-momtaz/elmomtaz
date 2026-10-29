@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin.html
 Disallow: /login.html
 
-Sitemap: https://yourusername.github.io/alemtiaz-electric/sitemap.xml
+Sitemap: https://el-momtaz.github.io/elmomtaz/sitemap.xml
