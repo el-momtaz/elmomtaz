@@ -22,7 +22,7 @@
       <a href="articles.html">المقالات</a>
       <a href="contact.html" class="active">اتصل بنا</a>
     </nav>
-    <a href="tel:+966508980434" class="nav-phone"><i class="fas fa-phone"></i> 0508980434</a>
+    <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> 0508980434</a>
     <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
   </div>
 </header>
@@ -40,11 +40,11 @@
       <h3 style="margin-bottom:30px;font-size:24px;">معلومات التواصل</h3>
       <div class="contact-item">
         <div class="icon"><i class="fas fa-phone"></i></div>
-        <div><h4>اتصل بنا</h4><a href="tel:+966508980434">966 50 898 0434+</a></div>
+        <div><h4>اتصل بنا</h4><a href="tel:+966508980434" data-dynamic="phone-link">966 50 898 0434+</a></div>
       </div>
       <div class="contact-item">
         <div class="icon"><i class="fab fa-whatsapp"></i></div>
-        <div><h4>واتساب</h4><a href="https://wa.me/966508980434">966 50 898 0434+</a></div>
+        <div><h4>واتساب</h4><a href="https://wa.me/966508980434" data-dynamic="whatsapp-link">966 50 898 0434+</a></div>
       </div>
       <div class="contact-item">
         <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
@@ -102,17 +102,26 @@
   </div>
 </footer>
 
-<a href="https://wa.me/966508980434" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="assets/firebase-config.js"></script>
+<script src="js/site-data.js"></script>
 <script src="js/main.js"></script>
 <script>
-function sendWhats(e){
+applySiteSettings();
+async function sendWhats(e){
   e.preventDefault();
-  const name=document.getElementById('cname').value;
-  const phone=document.getElementById('cphone').value;
+  const name=document.getElementById('cname').value.trim();
+  const phone=document.getElementById('cphone').value.trim();
   const service=document.getElementById('cservice').value;
-  const msg=document.getElementById('cmsg').value;
-  const text=`مرحباً، أنا ${name}%0aرقم الجوال: ${phone}%0aنوع الخدمة: ${service}%0aالتفاصيل: ${msg}`;
-  window.open(`https://wa.me/966508980434?text=${text}`,'_blank');
+  const msg=document.getElementById('cmsg').value.trim();
+  try { await sendMessage({name, phone, service, message:msg, date:new Date().toISOString()}); }
+  catch(err) { console.error('تعذر حفظ الرسالة:', err); }
+  const settings=await getSettings();
+  const text=`مرحباً، أنا ${name}\nرقم الجوال: ${phone}\nنوع الخدمة: ${service}\nالتفاصيل: ${msg}`;
+  window.open(`https://wa.me/${settings.whatsapp.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(text)}`,'_blank','noopener');
   return false;
 }
 </script>

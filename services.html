@@ -36,53 +36,7 @@
 
 <section class="section">
   <div class="container">
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-plug"></i></div>
-        <h3>تأسيس كهرباء</h3>
-        <p>تأسيس كامل للشبكات الكهربائية في المباني الجديدة، يشمل مد الأسلاك والمواسير وتوزيع النقاط الكهربائية وفق المخططات الهندسية ومعايير السلامة العالمية.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-lightbulb"></i></div>
-        <h3>تشطيب كهرباء</h3>
-        <p>تركيب كافة التشطيبات الكهربائية من إضاءة، مفاتيح، أباريز، ثريات وديكورات إضاءة عصرية تضفي لمسة جمالية واحترافية لمنزلك.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-tools"></i></div>
-        <h3>صيانة وإصلاح الأعطال</h3>
-        <p>خدمة صيانة طارئة ودورية لإصلاح الأعطال الكهربائية بكافة أنواعها بسرعة وكفاءة عالية لضمان سلامة منزلك وعائلتك.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-bolt"></i></div>
-        <h3>لوحات التوزيع الكهربائية</h3>
-        <p>تصميم وتركيب وصيانة لوحات التوزيع الرئيسية والفرعية بأحدث المواصفات لضمان توزيع آمن وفعال للتيار الكهربائي.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-shield-alt"></i></div>
-        <h3>أنظمة الحماية والأمان</h3>
-        <p>تركيب قواطع الحماية من الأحمال الزائدة وأجهزة الحماية من التسريب الكهربائي لحماية منزلك من مخاطر الحرائق والصعقات.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-building"></i></div>
-        <h3>المشاريع التجارية والصناعية</h3>
-        <p>تنفيذ كامل الأعمال الكهربائية للمحلات التجارية والمجمعات والمصانع بما يتناسب مع احتياجات كل مشروع.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-fan"></i></div>
-        <h3>أنظمة التكييف الكهربائية</h3>
-        <p>تمديد الدوائر الكهربائية الخاصة بأنظمة التكييف المركزي والسبليت بأمان تام.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-video"></i></div>
-        <h3>أنظمة المراقبة والإنذار</h3>
-        <p>تمديد وتركيب الأسلاك الخاصة بكاميرات المراقبة وأنظمة الإنذار المبكر.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-wrench"></i></div>
-        <h3>عقود الصيانة الدورية</h3>
-        <p>عقود صيانة سنوية لضمان استمرارية عمل منظومتك الكهربائية دون أعطال مفاجئة.</p>
-      </div>
-    </div>
+    <div class="services-grid" id="allServicesGrid"></div>
   </div>
 </section>
 
@@ -101,6 +55,12 @@
 </footer>
 
 <a href="https://wa.me/966508980434" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="assets/firebase-config.js"></script>
+<script src="js/site-data.js"></script>
 <script src="js/main.js"></script>
+<script>applySiteSettings(); renderServices("allServicesGrid");</script>
 </body>
 </html>

@@ -18,9 +18,14 @@
     <div class="logo"><img src="assets/logo.svg" alt="الممتاز"></div>
     <nav class="admin-nav">
       <a href="#dashboard" class="nav-item active" data-tab="dashboard"><i class="fas fa-th-large"></i> لوحة البيانات</a>
+      <a href="#site-settings" class="nav-item" data-tab="site-settings"><i class="fas fa-sliders-h"></i> إعدادات الموقع</a>
+      <a href="#services" class="nav-item" data-tab="services"><i class="fas fa-bolt"></i> الخدمات</a>
+      <a href="#testimonials" class="nav-item" data-tab="testimonials"><i class="fas fa-star"></i> آراء العملاء</a>
+      <a href="#gallery" class="nav-item" data-tab="gallery"><i class="fas fa-images"></i> معرض الأعمال</a>
       <a href="#articles" class="nav-item" data-tab="articles"><i class="fas fa-newspaper"></i> المقالات</a>
       <a href="#new-article" class="nav-item" data-tab="new-article"><i class="fas fa-plus-circle"></i> مقال جديد</a>
-      <a href="#settings" class="nav-item" data-tab="settings"><i class="fas fa-cog"></i> الإعدادات</a>
+      <a href="#messages" class="nav-item" data-tab="messages"><i class="fas fa-envelope"></i> رسائل العملاء <span id="msgBadge" class="badge badge-draft" style="display:none;"></span></a>
+      <a href="#backup" class="nav-item" data-tab="backup"><i class="fas fa-database"></i> النسخ الاحتياطي</a>
       <a href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> عرض الموقع</a>
       <a href="#" onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
     </nav>
@@ -28,12 +33,14 @@
 
   <main class="admin-main">
 
+    <!-- Dashboard -->
     <div class="tab-content" id="tab-dashboard">
       <div class="admin-topbar"><h1>لوحة البيانات</h1></div>
       <div class="admin-cards">
         <div class="admin-stat"><h3 id="statTotal">0</h3><p><i class="fas fa-newspaper"></i> إجمالي المقالات</p></div>
         <div class="admin-stat"><h3 id="statPublished">0</h3><p><i class="fas fa-check-circle"></i> منشورة</p></div>
-        <div class="admin-stat"><h3 id="statDraft">0</h3><p><i class="fas fa-edit"></i> مسودات</p></div>
+        <div class="admin-stat"><h3 id="statServices">0</h3><p><i class="fas fa-bolt"></i> الخدمات</p></div>
+        <div class="admin-stat"><h3 id="statMessages">0</h3><p><i class="fas fa-envelope"></i> رسائل جديدة</p></div>
       </div>
       <div class="admin-table-wrap">
         <table>
@@ -43,6 +50,142 @@
       </div>
     </div>
 
+    <!-- Site Settings -->
+    <div class="tab-content" id="tab-site-settings" style="display:none;">
+      <div class="admin-topbar"><h1>إعدادات الموقع</h1></div>
+      <div class="editor-card">
+        <div class="settings-section">
+          <h3><i class="fas fa-phone"></i> معلومات التواصل</h3>
+          <div class="form-row">
+            <div class="form-group"><label>رقم الهاتف</label><input type="text" id="set_phone" placeholder="+966508980434"></div>
+            <div class="form-group"><label>رقم الواتساب</label><input type="text" id="set_whatsapp" placeholder="+966508980434"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="set_email"></div>
+            <div class="form-group"><label>ساعات العمل</label><input type="text" id="set_workHours"></div>
+          </div>
+          <div class="form-group"><label>العنوان</label><input type="text" id="set_address"></div>
+          <div class="form-row">
+            <div class="form-group"><label>رابط فيسبوك</label><input type="text" id="set_facebook"></div>
+            <div class="form-group"><label>رابط تويتر (X)</label><input type="text" id="set_twitter"></div>
+          </div>
+          <div class="form-group"><label>رابط انستقرام</label><input type="text" id="set_instagram"></div>
+        </div>
+
+        <div class="settings-section">
+          <h3><i class="fas fa-home"></i> الصفحة الرئيسية (Hero)</h3>
+          <div class="form-group"><label>نص الشارة العلوية</label><input type="text" id="set_heroBadge"></div>
+          <div class="form-row">
+            <div class="form-group"><label>بداية العنوان</label><input type="text" id="set_heroTitlePart1"></div>
+            <div class="form-group"><label>الكلمة المميزة (باللون الذهبي)</label><input type="text" id="set_heroHighlight"></div>
+          </div>
+          <div class="form-group"><label>نهاية العنوان</label><input type="text" id="set_heroTitlePart2"></div>
+          <div class="form-group"><label>الوصف</label><textarea id="set_heroDescription" rows="3"></textarea></div>
+        </div>
+
+        <div class="settings-section">
+          <h3><i class="fas fa-chart-bar"></i> الإحصائيات</h3>
+          <div class="form-row">
+            <div class="form-group"><label>الرقم 1</label><input type="text" id="set_stat1Number"></div>
+            <div class="form-group"><label>التسمية 1</label><input type="text" id="set_stat1Label"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>الرقم 2</label><input type="text" id="set_stat2Number"></div>
+            <div class="form-group"><label>التسمية 2</label><input type="text" id="set_stat2Label"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>الرقم 3</label><input type="text" id="set_stat3Number"></div>
+            <div class="form-group"><label>التسمية 3</label><input type="text" id="set_stat3Label"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>الرقم 4</label><input type="text" id="set_stat4Number"></div>
+            <div class="form-group"><label>التسمية 4</label><input type="text" id="set_stat4Label"></div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3><i class="fas fa-info-circle"></i> صفحة "من نحن"</h3>
+          <div class="form-group"><label>الفقرة الأولى</label><textarea id="set_aboutText1" rows="3"></textarea></div>
+          <div class="form-group"><label>الفقرة الثانية</label><textarea id="set_aboutText2" rows="3"></textarea></div>
+        </div>
+
+        <div class="settings-section">
+          <h3><i class="fas fa-map-marked-alt"></i> الخريطة</h3>
+          <div class="form-group"><label>رابط خريطة جوجل (Embed URL)</label><input type="text" id="set_mapEmbedUrl"></div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveSettingsForm()"><i class="fas fa-save"></i> حفظ جميع الإعدادات</button>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div class="tab-content" id="tab-services" style="display:none;">
+      <div class="admin-topbar"><h1>إدارة الخدمات</h1></div>
+      <div class="editor-card" style="margin-bottom:25px;">
+        <h3 id="serviceFormTitle" style="color:var(--primary);margin-bottom:18px;">إضافة خدمة جديدة</h3>
+        <input type="hidden" id="serviceId">
+        <div class="form-row">
+          <div class="form-group"><label>أيقونة (FontAwesome class)</label><input type="text" id="srv_icon" placeholder="fas fa-plug"></div>
+          <div class="form-group"><label>عنوان الخدمة</label><input type="text" id="srv_title" placeholder="تأسيس كهرباء"></div>
+        </div>
+        <div class="form-group"><label>الوصف</label><textarea id="srv_desc" rows="3" placeholder="وصف الخدمة..."></textarea></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="saveServiceForm()"><i class="fas fa-save"></i> حفظ الخدمة</button>
+          <button class="btn btn-dark" onclick="resetServiceForm()" type="button">إلغاء</button>
+        </div>
+      </div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead><tr><th>الأيقونة</th><th>العنوان</th><th>الوصف</th><th>إجراءات</th></tr></thead>
+          <tbody id="servicesTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="tab-content" id="tab-testimonials" style="display:none;">
+      <div class="admin-topbar"><h1>آراء العملاء</h1></div>
+      <div class="editor-card" style="margin-bottom:25px;">
+        <h3 style="color:var(--primary);margin-bottom:18px;">إضافة رأي عميل</h3>
+        <div class="form-row">
+          <div class="form-group"><label>اسم العميل</label><input type="text" id="tst_name"></div>
+          <div class="form-group"><label>الصفة/المدينة (اختياري)</label><input type="text" id="tst_role" placeholder="عميل - جازان"></div>
+        </div>
+        <div class="form-group"><label>رابط صورة العميل (اختياري)</label><input type="text" id="tst_image"></div>
+        <div class="form-group"><label>التقييم</label>
+          <select id="tst_rating">
+            <option value="5">⭐⭐⭐⭐⭐ ممتاز</option>
+            <option value="4">⭐⭐⭐⭐ جيد جداً</option>
+            <option value="3">⭐⭐⭐ جيد</option>
+          </select>
+        </div>
+        <div class="form-group"><label>نص الرأي</label><textarea id="tst_text" rows="3"></textarea></div>
+        <button class="btn btn-primary" onclick="saveTestimonialForm()"><i class="fas fa-save"></i> إضافة الرأي</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead><tr><th>الاسم</th><th>التقييم</th><th>النص</th><th>إجراءات</th></tr></thead>
+          <tbody id="testimonialsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="tab-content" id="tab-gallery" style="display:none;">
+      <div class="admin-topbar"><h1>معرض الأعمال</h1></div>
+      <div class="editor-card" style="margin-bottom:25px;">
+        <h3 style="color:var(--primary);margin-bottom:18px;">إضافة صورة جديدة</h3>
+        <div class="form-row">
+          <div class="form-group"><label>رابط الصورة</label><input type="text" id="gal_image" placeholder="https://..."></div>
+          <div class="form-group"><label>عنوان الصورة</label><input type="text" id="gal_title" placeholder="تأسيس فيلا - جازان"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveGalleryForm()"><i class="fas fa-save"></i> إضافة للمعرض</button>
+        <img id="galPreview" class="thumb-preview" style="display:none;">
+      </div>
+      <div class="services-grid" id="galleryManageGrid"></div>
+    </div>
+
+    <!-- Articles -->
     <div class="tab-content" id="tab-articles" style="display:none;">
       <div class="admin-topbar">
         <h1>إدارة المقالات</h1>
@@ -56,44 +199,25 @@
       </div>
     </div>
 
+    <!-- New/Edit Article -->
     <div class="tab-content" id="tab-new-article" style="display:none;">
       <div class="admin-topbar"><h1 id="editorTitle">مقال جديد</h1></div>
       <div class="editor-card">
         <input type="hidden" id="articleId">
-        <div class="form-group">
-          <label>عنوان المقال</label>
-          <input type="text" id="artTitle" placeholder="اكتب عنوان المقال هنا">
-        </div>
-        <div class="form-group">
-          <label>رابط الصورة البارزة</label>
-          <input type="text" id="artImage" placeholder="https://example.com/image.jpg">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-          <div class="form-group">
-            <label>التصنيف</label>
+        <div class="form-group"><label>عنوان المقال</label><input type="text" id="artTitle"></div>
+        <div class="form-group"><label>رابط الصورة البارزة</label><input type="text" id="artImage"></div>
+        <div class="form-row">
+          <div class="form-group"><label>التصنيف</label>
             <select id="artCategory">
-              <option>تأسيس</option>
-              <option>تشطيب</option>
-              <option>صيانة</option>
-              <option>نصائح عامة</option>
+              <option>تأسيس</option><option>تشطيب</option><option>صيانة</option><option>نصائح عامة</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>الحالة</label>
-            <select id="artStatus">
-              <option value="published">منشور</option>
-              <option value="draft">مسودة</option>
-            </select>
+          <div class="form-group"><label>الحالة</label>
+            <select id="artStatus"><option value="published">منشور</option><option value="draft">مسودة</option></select>
           </div>
         </div>
-        <div class="form-group">
-          <label>وصف مختصر (SEO)</label>
-          <textarea id="artExcerpt" rows="3" placeholder="وصف مختصر وجذاب للمقال"></textarea>
-        </div>
-        <div class="form-group">
-          <label>محتوى المقال</label>
-          <div id="editor-container"></div>
-        </div>
+        <div class="form-group"><label>وصف مختصر (SEO)</label><textarea id="artExcerpt" rows="3"></textarea></div>
+        <div class="form-group"><label>محتوى المقال</label><div id="editor-container"></div></div>
         <div style="display:flex;gap:12px;margin-top:20px;">
           <button class="btn btn-primary" onclick="saveArticleForm()"><i class="fas fa-save"></i> حفظ المقال</button>
           <button class="btn btn-dark" onclick="switchTab('articles')" type="button">إلغاء</button>
@@ -101,12 +225,19 @@
       </div>
     </div>
 
-    <div class="tab-content" id="tab-settings" style="display:none;">
-      <div class="admin-topbar"><h1>الإعدادات</h1></div>
+    <!-- Messages -->
+    <div class="tab-content" id="tab-messages" style="display:none;">
+      <div class="admin-topbar"><h1>رسائل العملاء</h1></div>
+      <div id="messagesContainer"></div>
+    </div>
+
+    <!-- Backup -->
+    <div class="tab-content" id="tab-backup" style="display:none;">
+      <div class="admin-topbar"><h1>النسخ الاحتياطي</h1></div>
       <div class="editor-card">
-        <h3 style="margin-bottom:20px;color:var(--primary);">تصدير/استيراد البيانات</h3>
+        <h3 style="margin-bottom:20px;color:var(--primary);">تصدير/استيراد المقالات</h3>
         <div style="display:flex;gap:15px;">
-          <button class="btn btn-dark" onclick="exportData()"><i class="fas fa-download"></i> تصدير المقالات (JSON)</button>
+          <button class="btn btn-dark" onclick="exportData()"><i class="fas fa-download"></i> تصدير المقالات</button>
           <label class="btn btn-primary" style="cursor:pointer;">
             <i class="fas fa-upload"></i> استيراد مقالات
             <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(event)">
@@ -123,8 +254,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="assets/firebase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-<script src="js/auth.js"></script>
 <script src="js/articles-store.js"></script>
+<script src="js/site-data.js"></script>
 <script src="js/admin.js"></script>
 </body>
 </html>

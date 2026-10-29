@@ -3,4 +3,5 @@ Allow: /
 Disallow: /admin.html
 Disallow: /login.html
 
-Sitemap: https://el-momtaz.github.io/elmomtaz/sitemap.xml
+# بعد النشر حدّث رابط خريطة الموقع إلى نطاقك الفعلي
+Sitemap: https://YOUR-DOMAIN/sitemap.xml

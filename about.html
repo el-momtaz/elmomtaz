@@ -42,8 +42,8 @@
     <div>
       <span style="color:var(--accent-dark);font-weight:700;">قصتنا</span>
       <h2 style="font-size:32px;color:var(--primary);margin:10px 0 18px;font-weight:800;">شريككم الموثوق في الأعمال الكهربائية</h2>
-      <p style="color:var(--gray);margin-bottom:16px;">تأسست شركة الممتاز للأعمال الكهربائية لتكون الخيار الأول في مدينة جازان والمناطق المجاورة، حيث نقدم خدمات شاملة في مجال تأسيس وتشطيب الكهرباء للمنازل والفلل والمنشآت التجارية.</p>
-      <p style="color:var(--gray);margin-bottom:16px;">يضم فريقنا نخبة من الفنيين المدربين والمعتمدين، ملتزمون بتقديم أعلى معايير الجودة والسلامة في كل مشروع، مع الحرص الدائم على رضا عملائنا وتلبية احتياجاتهم بدقة واحترافية.</p>
+      <p style="color:var(--gray);margin-bottom:16px;" id="aboutText1">تأسست شركة الممتاز للأعمال الكهربائية لتكون الخيار الأول في مدينة جازان والمناطق المجاورة.</p>
+      <p style="color:var(--gray);margin-bottom:16px;" id="aboutText2">يضم فريقنا نخبة من الفنيين المدربين، ملتزمون بتقديم أعلى معايير الجودة والسلامة.</p>
       <div class="about-features">
         <div class="feature-box"><i class="fas fa-award"></i><h5>جودة مضمونة</h5></div>
         <div class="feature-box"><i class="fas fa-clock"></i><h5>التزام بالمواعيد</h5></div>
@@ -99,6 +99,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="assets/firebase-config.js"></script>
+<script src="js/site-data.js"></script>
 <script src="js/main.js"></script>
+<script>applySiteSettings();</script>
 </body>
 </html>

@@ -254,3 +254,36 @@ table td{padding:16px;border-top:1px solid var(--border);font-size:14px;vertical
   .article-content{padding:25px;}
   .admin-main{padding:20px;}
 }
+
+/* Testimonials */
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;}
+.testimonial-card{background:var(--white);padding:30px;border-radius:var(--radius);box-shadow:var(--shadow);}
+.testimonial-card .stars{color:var(--accent);font-size:20px;margin-bottom:15px;}
+.testimonial-card p{color:var(--text);font-style:italic;margin-bottom:20px;min-height:60px;}
+.testimonial-author{display:flex;align-items:center;gap:14px;}
+.testimonial-author img{width:50px;height:50px;border-radius:50%;object-fit:cover;}
+.testimonial-author h5{color:var(--primary);font-size:15px;}
+.testimonial-author span{color:var(--gray);font-size:13px;}
+
+/* Gallery */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;}
+.gallery-item{position:relative;border-radius:14px;overflow:hidden;height:220px;box-shadow:var(--shadow);}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:.4s;}
+.gallery-item:hover img{transform:scale(1.1);}
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(13,27,42,.85));display:flex;align-items:flex-end;padding:18px;opacity:0;transition:.3s;}
+.gallery-item:hover .gallery-overlay{opacity:1;}
+.gallery-overlay h4{color:var(--white);font-size:16px;}
+
+/* Admin extras */
+.settings-section{margin-bottom:35px;}
+.settings-section h3{color:var(--primary);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border);font-size:18px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.rating-select{display:flex;gap:6px;font-size:24px;color:var(--border);cursor:pointer;}
+.rating-select i.active{color:var(--accent);}
+.msg-card{background:var(--white);padding:22px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:15px;border-right:4px solid var(--border);}
+.msg-card.unread{border-right-color:var(--accent-dark);background:#FFFBEB;}
+.msg-card h4{color:var(--primary);margin-bottom:6px;}
+.msg-card .msg-meta{font-size:13px;color:var(--gray);margin-bottom:10px;display:flex;gap:15px;flex-wrap:wrap;}
+.msg-card p{color:var(--text);margin-bottom:12px;}
+.thumb-preview{width:100%;height:160px;object-fit:cover;border-radius:10px;margin-top:10px;}
+@media(max-width:768px){ .form-row{grid-template-columns:1fr;} }
