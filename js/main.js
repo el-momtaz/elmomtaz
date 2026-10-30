@@ -4,8 +4,17 @@
 
 const PLACEHOLDER_IMAGE = 'assets/placeholder.svg';
 
-// ---------- القائمة في الجوال ----------
+// ---------- القائمة في الجوال + حالة الرأس عند التمرير ----------
 document.addEventListener('DOMContentLoaded', function () {
+  const siteHeader = document.getElementById('siteHeader');
+  if (siteHeader) {
+    const syncHeader = function () {
+      siteHeader.classList.toggle('is-scrolled', window.scrollY > 10);
+    };
+    syncHeader();
+    window.addEventListener('scroll', syncHeader, { passive: true });
+  }
+
   const menuToggle = document.getElementById('menuToggle');
   const navLinks = document.getElementById('navLinks');
   if (menuToggle && navLinks) {
