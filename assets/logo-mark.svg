@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="شعار شركة الممتاز">
+  <defs>
+    <linearGradient id="gm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFD54F"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="62" height="62" rx="18" fill="#0D1B2A"/>
+  <rect x="1.75" y="1.75" width="60.5" height="60.5" rx="17.25" fill="none" stroke="url(#gm)" stroke-width="1.5" opacity=".55"/>
+  <path d="M36.5 12 L18 39.5 h11.5 L26 52 L46 24.5 H34z" fill="url(#gm)"/>
+</svg>

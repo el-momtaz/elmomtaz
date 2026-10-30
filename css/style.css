@@ -730,3 +730,114 @@ a.service-card:focus-visible{outline:3px solid var(--accent-dark);outline-offset
 .setup-banner h3{color:#92400E;font-size:17px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
 .setup-banner p{color:#92400E;font-size:13.5px;line-height:1.8;opacity:.9;}
 .setup-banner .btn{flex-shrink:0;}
+
+/* ============================================================
+   رأس الصفحة (Header) — تصميم محدّث
+   ============================================================ */
+:root{ --header-h:66px; }
+
+header{
+  background:rgba(255,255,255,.9);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  backdrop-filter:saturate(180%) blur(14px);
+  box-shadow:0 1px 0 rgba(13,27,42,.07), 0 10px 30px -22px rgba(13,27,42,.45);
+}
+header::after{
+  content:'';position:absolute;right:0;left:0;bottom:0;height:2px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,#FFC107 22%,#FFD54F 50%,#FFC107 78%,transparent);
+  opacity:.5;
+}
+.navbar{padding:10px 0;gap:14px;}
+
+/* الشعار: أيقونة + اسم الشركة في سطرين */
+.navbar .logo{
+  display:inline-flex;align-items:center;gap:11px;flex-shrink:0;
+  text-decoration:none;border-radius:14px;
+}
+.navbar .logo img{
+  height:44px;width:44px;border-radius:13px;display:block;
+  box-shadow:0 8px 18px -10px rgba(13,27,42,.75);
+  transition:transform var(--transition),box-shadow var(--transition);
+}
+.navbar .logo:hover img{transform:translateY(-2px) rotate(-4deg);box-shadow:0 12px 22px -10px rgba(13,27,42,.8);}
+.logo-text{display:flex;flex-direction:column;line-height:1.12;}
+.logo-name{font-size:20px;font-weight:900;color:var(--primary);letter-spacing:0;}
+.logo-sub{font-size:11.5px;font-weight:700;color:#B8760A;letter-spacing:.2px;margin-top:1px;}
+
+/* أزرار الطرف الآخر */
+.nav-actions{display:flex;align-items:center;gap:10px;margin-right:auto;}
+.nav-call{
+  display:none;width:42px;height:42px;border-radius:50%;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  color:#fff;font-size:15px;text-decoration:none;
+  box-shadow:0 10px 20px -10px rgba(13,27,42,.9);
+  transition:transform var(--transition),box-shadow var(--transition);
+}
+.nav-call:hover{transform:translateY(-2px);color:var(--accent);}
+
+.menu-toggle{
+  display:none;width:44px;height:44px;align-items:center;justify-content:center;
+  border:1px solid var(--border);border-radius:13px;background:#fff;
+  color:var(--primary);font-size:17px;line-height:1;cursor:pointer;
+  box-shadow:0 6px 16px -12px rgba(13,27,42,.8);
+  transition:background var(--transition),border-color var(--transition),transform var(--transition);
+}
+.menu-toggle:hover{border-color:var(--accent);background:#FFFBEB;}
+.menu-toggle.is-open{background:var(--primary);border-color:var(--primary);color:var(--accent);}
+
+/* رقم الهاتف يبقى باتجاهه الصحيح داخل واجهة عربية */
+.nav-phone span, .drawer-btn span, .footer-contact span[data-dynamic="phone-text"]{
+  direction:ltr;unicode-bidi:isolate;display:inline-block;
+}
+
+/* أزرار أسفل درج القائمة (الجوال والتابلت) */
+.drawer-cta{display:none;}
+
+@media(max-width:992px){
+  :root{ --header-h:60px; }
+  .navbar{padding:10px 0;gap:10px;}
+  .navbar .logo img{height:40px;width:40px;border-radius:12px;}
+  .logo-name{font-size:17.5px;}
+  .logo-sub{font-size:10px;}
+  .nav-phone{display:none !important;}
+  .nav-call{display:inline-flex;width:40px;height:40px;font-size:14px;}
+  .menu-toggle{display:inline-flex;width:40px;height:40px;border-radius:12px;}
+
+  /* درج القائمة */
+  .nav-links{
+    position:fixed;top:var(--header-h);right:-100%;
+    width:min(360px,86%);height:calc(100dvh - var(--header-h));
+    background:var(--white);flex-direction:column;justify-content:flex-start;
+    padding:26px 22px calc(26px + env(safe-area-inset-bottom));
+    gap:0;z-index:999;overflow-y:auto;transition:.4s;
+    border-inline-start:1px solid var(--border);
+    box-shadow:-10px 0 30px rgba(0,0,0,.1);
+  }
+  .nav-links.active{right:0;}
+  .nav-links a{
+    width:100%;padding:15px 4px !important;font-size:16.5px !important;
+    border-bottom:1px solid #F1F3F6;
+  }
+  .nav-links a::after{display:none;}
+  .nav-links a.active{color:var(--accent-dark);font-weight:800;}
+  body.menu-open{overflow:hidden;}
+
+  .drawer-cta{
+    display:flex;flex-direction:column;gap:10px;align-self:stretch;width:100%;
+    margin-top:auto;padding-top:22px;
+  }
+  .drawer-btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:14px 18px !important;border-radius:13px;font-weight:800;font-size:16px;
+    text-decoration:none;border:none !important;
+    transition:transform var(--transition),box-shadow var(--transition);
+  }
+  .drawer-btn:hover{transform:translateY(-2px);}
+  .drawer-btn-gold{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#0D1B2A;box-shadow:0 12px 24px -14px rgba(255,143,0,.9);}
+  .drawer-btn-line{background:#fff;color:var(--primary);border:1.5px solid var(--border) !important;}
+}
+@media(max-width:380px){
+  .logo-sub{font-size:9px;}
+  .logo-name{font-size:16px;}
+  .navbar .logo img{height:36px;width:36px;}
+}

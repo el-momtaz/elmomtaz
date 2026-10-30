@@ -33,7 +33,10 @@
 
 <header>
   <div class="container navbar">
-    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="شعار شركة الممتاز للأعمال الكهربائية"></a>
+    <a href="index.html" class="logo" aria-label="شركة الممتاز للأعمال الكهربائية — الصفحة الرئيسية">
+      <img src="assets/logo-mark.svg" alt="شعار شركة الممتاز للأعمال الكهربائية" width="44" height="44">
+      <span class="logo-text"><span class="logo-name">الممتاز</span><span class="logo-sub">للأعمال الكهربائية</span></span>
+    </a>
     <nav class="nav-links" id="navLinks">
       <a href="index.html">الرئيسية</a>
       <a href="about.html">من نحن</a>
@@ -41,9 +44,17 @@
       <a href="booking.html">حجز موعد</a>
       <a href="articles.html" class="active">المقالات</a>
       <a href="contact.html">اتصل بنا</a>
+      <div class="drawer-cta">
+        <a href="booking.html" class="drawer-btn drawer-btn-gold"><i class="fas fa-calendar-check"></i> احجز موعدك الآن</a>
+        <a href="tel:+966508980434" data-dynamic="phone-link" class="drawer-btn drawer-btn-line"><i class="fas fa-phone-volume"></i> <span data-dynamic="phone-text">0508980434</span></a>
+      </div>
+
     </nav>
-    <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> <span data-dynamic="phone-text">0508980434</span></a>
-    <button class="menu-toggle" id="menuToggle" aria-label="القائمة"><i class="fas fa-bars"></i></button>
+    <div class="nav-actions">
+      <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> <span data-dynamic="phone-text">0508980434</span></a>
+      <a href="tel:+966508980434" class="nav-call" aria-label="اتصل بنا الآن"><i class="fas fa-phone"></i></a>
+      <button class="menu-toggle" id="menuToggle" aria-label="القائمة" aria-expanded="false" aria-controls="navLinks"><i class="fas fa-bars"></i></button>
+    </div>
   </div>
 </header>
 

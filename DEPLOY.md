@@ -18,10 +18,12 @@
 | `js/main.js` `js/service-page.js` | حقن `Article`/`Service` JSON-LD وتحديث `og:*` و`canonical` تلقائيًا لكل مقال/خدمة |
 | `assets/og-image.jpg` | **جديد** — صورة مشاركة 1200×630 |
 | `assets/apple-touch-icon.png` | **جديد** — أيقونة 180×180 لأجهزة iOS |
+| `css/style.css` | **جديد** — تنسيق رأس الصفحة المحدّث + درج القائمة |
+| `assets/logo-mark.svg` | **جديد** — أيقونة الشعار (البرق) المستخدمة في الرأس |
 | `.nojekyll` | يمنع Jekyll من معالجة الملفات (إن لم يكن مرفوعًا) |
 | `404.html` | صفحة خطأ تعمل على أي عمق + `<base href="/elmomtaz/">` |
 
-أقل عدد ملفات يكفي لهذا التحديث: **8 صفحات HTML + `js/main.js` + `js/service-page.js` + `sitemap.xml` + `assets/og-image.jpg` + `assets/apple-touch-icon.png`**.
+أقل عدد ملفات يكفي لهذا التحديث: **8 صفحات HTML + `css/style.css` + `js/main.js` + `js/service-page.js` + `sitemap.xml` + `assets/og-image.jpg` + `assets/apple-touch-icon.png` + `assets/logo-mark.svg`**.
 
 **طريقة التحديث:** افتح المستودع على GitHub → **Add file → Upload files** → اسحب الملفات المذكورة (بنفس المسارات) → **Commit changes** → انتظر 1–2 دقيقة.
 

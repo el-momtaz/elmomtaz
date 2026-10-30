@@ -10,16 +10,26 @@ document.addEventListener('DOMContentLoaded', function () {
   const navLinks = document.getElementById('navLinks');
   if (menuToggle && navLinks) {
     menuToggle.addEventListener('click', function () {
-      navLinks.classList.toggle('active');
+      const open = navLinks.classList.toggle('active');
+      menuToggle.classList.toggle('is-open', open);
+      menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.body.classList.toggle('menu-open', open);
       const icon = menuToggle.querySelector('i');
       if (!icon) return;
-      icon.classList.toggle('fa-bars');
-      icon.classList.toggle('fa-times');
+      icon.classList.toggle('fa-bars', !open);
+      icon.classList.toggle('fa-times', open);
     });
   }
   document.querySelectorAll('.nav-links a').forEach(function (link) {
     link.addEventListener('click', function () {
-      if (navLinks) navLinks.classList.remove('active');
+      if (navLinks) {
+        navLinks.classList.remove('active');
+        menuToggle && menuToggle.classList.remove('is-open');
+        menuToggle && menuToggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('menu-open');
+        const ic = menuToggle && menuToggle.querySelector('i');
+        if (ic) { ic.classList.add('fa-bars'); ic.classList.remove('fa-times'); }
+      }
     });
   });
 });
