@@ -4,6 +4,34 @@
 
 ---
 
+## 0) أنت منشور على GitHub Pages — تحديث سريع
+
+موقعك الحالي: `https://el-momtaz.github.io/elmomtaz` — تم ضبط النطاق والمسار الفرعي في هذه النسخة.
+
+**الملفات التي تغيّرت وتحتاج استبدالاً في المستودع:**
+
+| الملف | التغيير |
+|---|---|
+| `sitemap.xml` | روابط النطاق الفعلي (6 روابط) |
+| `robots.txt` | مسار `Disallow` الصحيح + سطر Sitemap |
+| كل ملفات `*.html` (11 صفحة) | `canonical` و`og:url` و`og:image` بروابط مطلقة |
+| `404.html` | صفحة خطأ جديدة تعمل على أي عمق + `<base href="/elmomtaz/">` |
+| `.nojekyll` | جديد — يمنع Jekyll من معالجة الملفات |
+| `login.html` و`admin.html` | بدون canonical (الأصح لصفحات noindex) |
+
+**طريقة التحديث:** افتح المستودع على GitHub → **Add file → Upload files** → اسحب الملفات المذكورة (بنفس المسارات) → **Commit changes** → انتظر 1–2 دقيقة.
+
+> GitHub Pages يخزّن مؤقتًا ~10 دقائق أحيانًا؛ استخدم `Ctrl+Shift+R` للتحديث القسري.
+
+**خطوات لازمة مرة واحدة:**
+1. Firebase → **Authentication → Settings → Authorized domains** → أضف `el-momtaz.github.io`.
+2. Settings في المستودع → Pages → تأكد أن **Enforce HTTPS** مفعّل.
+3. [Google Search Console](https://search.google.com/search-console) → أضف الموقع → أرسل `https://el-momtaz.github.io/elmomtaz/sitemap.xml`.
+
+> ملف `_headers` خاص بـ Cloudflare Pages فقط (سيعطي 404 على GitHub Pages) — لا يؤثر على شيء، يمكنك تجاهله أو حذفه.
+
+---
+
 ## 1) ارفع الملفات
 
 ### Cloudflare Pages (الأسهل والمجاني)

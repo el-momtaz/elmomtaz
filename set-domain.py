@@ -49,19 +49,35 @@ def update_sitemap(domain: str) -> bool:
     return True
 
 
+def base_path(domain: str) -> str:
+    """المسار الأساسي بعد الدومين، مثال: https://user.github.io/repo → /repo"""
+    without_scheme = re.sub(r'^https?://', '', domain)
+    slash = without_scheme.find('/')
+    return without_scheme[slash:] if slash != -1 else ''
+
+
 def update_robots(domain: str) -> bool:
     path = os.path.join(ROOT, 'robots.txt')
     if not os.path.exists(path):
         return False
+
+    base = base_path(domain)
+
     with open(path, encoding='utf-8') as fh:
         lines = fh.read().splitlines()
 
-    lines = [ln for ln in lines if not ln.lower().startswith('sitemap:')]
-    lines.append('')
-    lines.append(f'Sitemap: {domain}/sitemap.xml')
+    # إعادة بناء الملف: قواعد الزحف بالمسار الصحيح + سطر خريطة الموقع
+    out = [
+        'User-agent: *',
+        'Allow: /',
+        f'Disallow: {base}/admin.html',
+        f'Disallow: {base}/login.html',
+        '',
+        f'Sitemap: {domain}/sitemap.xml',
+    ]
 
     with open(path, 'w', encoding='utf-8') as fh:
-        fh.write('\n'.join(lines).rstrip() + '\n')
+        fh.write('\n'.join(out) + '\n')
     return True
 
 

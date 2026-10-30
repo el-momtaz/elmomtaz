@@ -8,32 +8,32 @@
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://YOUR-DOMAIN/</loc>
+    <loc>https://el-momtaz.github.io/elmomtaz/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://YOUR-DOMAIN/services.html</loc>
+    <loc>https://el-momtaz.github.io/elmomtaz/services.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-DOMAIN/booking.html</loc>
+    <loc>https://el-momtaz.github.io/elmomtaz/booking.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOUR-DOMAIN/about.html</loc>
+    <loc>https://el-momtaz.github.io/elmomtaz/about.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://YOUR-DOMAIN/articles.html</loc>
+    <loc>https://el-momtaz.github.io/elmomtaz/articles.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://YOUR-DOMAIN/contact.html</loc>
+    <loc>https://el-momtaz.github.io/elmomtaz/contact.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>

@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /admin.html
-Disallow: /login.html
+Disallow: /elmomtaz/admin.html
+Disallow: /elmomtaz/login.html
 
-# سطر خريطة الموقع يُضاف تلقائياً بعد تشغيل:
-#   python3 set-domain.py https://your-domain.com
+Sitemap: https://el-momtaz.github.io/elmomtaz/sitemap.xml
