@@ -903,6 +903,98 @@ async function exportData() {
   }
 }
 
+// ============================================
+// استيراد مقالات من ملف JSON
+// يقبل: مصفوفة مقالات، أو {articles:[...]}، أو مقالًا واحدًا بصيغته الكاملة
+// ============================================
+
+// تحويل ماركداون مبسّط إلى HTML (احتياطي فقط)
+function markdownToHtml(md) {
+  const lines = String(md || '').replace(/\r/g, '').split('\n');
+  let html = '', inList = false;
+  const inline = function (t) {
+    return t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  };
+  lines.forEach(function (line) {
+    const t = line.trim();
+    if (/^###\s+/.test(t)) { html += '<h3>' + inline(t.replace(/^###\s+/, '')) + '</h3>'; }
+    else if (/^##\s+/.test(t)) { html += '<h2>' + inline(t.replace(/^##\s+/, '')) + '</h2>'; }
+    else if (/^#\s+/.test(t)) { html += '<h2>' + inline(t.replace(/^#\s+/, '')) + '</h2>'; }
+    else if (/^[-*]\s+/.test(t)) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += '<li>' + inline(t.replace(/^[-*]\s+/, '')) + '</li>';
+    } else {
+      if (inList) { html += '</ul>'; inList = false; }
+      if (t) html += '<p>' + inline(t) + '</p>';
+    }
+  });
+  if (inList) html += '</ul>';
+  return html;
+}
+
+// توحيد صيغ الأسئلة الشائعة
+function normalizeFaq(raw) {
+  const list = Array.isArray(raw) ? raw : [];
+  return list.map(function (f) {
+    if (!f || typeof f !== 'object') return null;
+    const q = f.question || f.name || f.q || '';
+    const a = f.answer || (f.acceptedAnswer && f.acceptedAnswer.text) || f.a || '';
+    if (!q || !a) return null;
+    return { question: String(q).trim(), answer: String(a).trim() };
+  }).filter(Boolean);
+}
+
+// استخراج قائمة المقالات من أي بنية ملف
+function extractArticlesFromJson(parsed) {
+  if (Array.isArray(parsed)) return parsed;
+  if (!parsed || typeof parsed !== 'object') return [];
+  if (Array.isArray(parsed.articles)) return parsed.articles;
+  if (Array.isArray(parsed.data)) return parsed.data;
+  if (Array.isArray(parsed.items)) return parsed.items;
+  if (parsed.article && typeof parsed.article === 'object') return [parsed];
+  if (parsed.title || parsed.meta_title) return [parsed];
+  return [];
+}
+
+// تحويل أي مقال إلى حقول الموقع
+function normalizeArticle(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const seo = raw.seo || {};
+  const art = raw.article || {};
+  const title = raw.title || art.title || seo.meta_title || seo.title || '';
+  if (!title) return null;
+
+  let content = raw.content || raw.body_html || art.body_html || '';
+  if (!content && (art.body_markdown || raw.body_markdown)) content = markdownToHtml(art.body_markdown || raw.body_markdown);
+  if (!content && (art.plain_text || raw.plain_text)) {
+    content = String(art.plain_text || raw.plain_text).split(/\n{2,}/).map(function (p) {
+      return '<p>' + p.trim().replace(/\n/g, ' ') + '</p>';
+    }).join('');
+  }
+
+  const faq = normalizeFaq(raw.faq || art.faq || (seo.json_ld && null));
+  if (!content && !faq.length) return null;
+
+  const allowed = ['تأسيس', 'تشطيب', 'صيانة', 'نصائح عامة'];
+  let category = raw.category || art.category || '';
+  if (allowed.indexOf(category) === -1) category = 'نصائح عامة';
+
+  const today = new Date().toISOString().slice(0, 10);
+  const out = {
+    title: String(title).trim(),
+    date: String(raw.date || art.date || today).slice(0, 10),
+    excerpt: String(raw.excerpt || art.excerpt || seo.meta_description || art.subtitle || '').trim(),
+    content: content,
+    image: raw.image || art.image || art.hero_image || '',
+    category: category,
+    status: (raw.status === 'draft' ? 'draft' : 'published'),
+    author: raw.author || 'شركة الممتاز للأعمال الكهربائية'
+  };
+  if (faq.length) out.faq = faq;
+  return out;
+}
+
 function importData(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -910,16 +1002,17 @@ function importData(event) {
   const reader = new FileReader();
   reader.onload = async function (e) {
     try {
-      const parsed = JSON.parse(e.target.result);
-      const articles = Array.isArray(parsed) ? parsed : (parsed.articles || []);
-      if (!articles.length) throw new Error('لا توجد مقالات في الملف');
+      const parsed = JSON.parse(String(e.target.result).replace(/^\uFEFF/, ''));
+      const rawList = extractArticlesFromJson(parsed);
+      if (!rawList.length) {
+        throw new Error('لم أجد أي مقال في الملف. لازم يحتوي الملف على articles أو article أو أن يكون مصفوفة مقالات');
+      }
+      const prepared = rawList.map(normalizeArticle).filter(Boolean);
+      if (!prepared.length) throw new Error('الملف لا يحتوي عنوانًا ومحتوى صالحًا لمقال');
 
       let count = 0;
-      for (const art of articles) {
-        const data = Object.assign({}, art);
-        delete data.id;
-        delete data.createdAt;
-        await addArticle(data);
+      for (const art of prepared) {
+        await addArticle(art);
         count++;
       }
       showToast('تم استيراد ' + count + ' مقال', 'success');

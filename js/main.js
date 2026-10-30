@@ -345,6 +345,24 @@ async function loadSingleArticle() {
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }
   });
 
+  // الأسئلة الشائعة (إن وُجدت) — تتيح ظهورها المنسّق في نتائج جوجل
+  if (Array.isArray(article.faq) && article.faq.length) {
+    const faqItems = article.faq.filter(function (f) { return f && f.question && f.answer; });
+    if (faqItems.length) {
+      setJsonLd('schemaFaq', {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map(function (f) {
+          return {
+            '@type': 'Question',
+            name: f.question,
+            acceptedAnswer: { '@type': 'Answer', text: f.answer }
+          };
+        })
+      });
+    }
+  }
+
   const shareUrl = encodeURIComponent(window.location.href);
   const shareText = encodeURIComponent(article.title || '');
 
