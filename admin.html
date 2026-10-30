@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+
 </head>
 <body>
 
@@ -118,30 +119,117 @@
       </div>
     </div>
 
-    <!-- Services -->
-    <div class="tab-content" id="tab-services" style="display:none;">
-      <div class="admin-topbar"><h1>إدارة الخدمات</h1></div>
-      <div class="editor-card" style="margin-bottom:25px;">
-        <h3 id="serviceFormTitle" style="color:var(--primary);margin-bottom:18px;">إضافة خدمة جديدة</h3>
-        <input type="hidden" id="serviceId">
+    <!-- ============ تبويب الخدمات ============ -->
+<div class="tab-content" id="tab-services">
+  <div class="admin-section-header">
+    <h2><i class="fas fa-tools"></i> إدارة الخدمات</h2>
+    <button class="btn btn-primary" onclick="openServiceForm()">
+      <i class="fas fa-plus"></i> إضافة خدمة جديدة
+    </button>
+  </div>
+
+  <!-- جدول عرض الخدمات -->
+  <div class="admin-table-wrapper" id="servicesTableWrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>الصورة</th>
+          <th>الاسم</th>
+          <th>الوصف المختصر</th>
+          <th>الرابط</th>
+          <th>إجراءات</th>
+        </tr>
+      </thead>
+      <tbody id="servicesTableBody">
+        <tr><td colspan="5" class="text-center">جاري التحميل...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- نموذج إضافة/تعديل خدمة (مخفي افتراضياً) -->
+  <div class="modal-overlay" id="serviceFormModal" style="display:none">
+    <div class="modal-box modal-large">
+      <div class="modal-header">
+        <h3 id="serviceFormTitle">إضافة خدمة جديدة</h3>
+        <button class="modal-close" onclick="closeServiceForm()"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="serviceId" />
+
         <div class="form-row">
-          <div class="form-group"><label>أيقونة (FontAwesome class)</label><input type="text" id="srv_icon" placeholder="fas fa-plug"></div>
-          <div class="form-group"><label>عنوان الخدمة</label><input type="text" id="srv_title" placeholder="تأسيس كهرباء"></div>
+          <div class="form-group">
+            <label>اسم الخدمة *</label>
+            <input type="text" id="serviceTitleInput" placeholder="مثال: تأسيس كهربائي" />
+          </div>
+          <div class="form-group">
+            <label>أيقونة Font Awesome</label>
+            <input type="text" id="serviceIconInput" placeholder="fas fa-plug" value="fas fa-bolt" />
+            <small>مثال: fas fa-bolt / fas fa-plug / fas fa-lightbulb / fas fa-tools</small>
+          </div>
         </div>
-        <div class="form-group"><label>الوصف</label><textarea id="srv_desc" rows="3" placeholder="وصف الخدمة..."></textarea></div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn btn-primary" onclick="saveServiceForm()"><i class="fas fa-save"></i> حفظ الخدمة</button>
-          <button class="btn btn-dark" onclick="resetServiceForm()" type="button">إلغاء</button>
+
+        <div class="form-group">
+          <label>الرابط الدائم (Slug) — اتركه فارغاً ليُنشأ تلقائياً</label>
+          <input type="text" id="serviceSlugInput" placeholder="taasis-kahrabai" dir="ltr" />
+        </div>
+
+        <div class="form-group">
+          <label>الوصف المختصر (يظهر في كروت الخدمات)</label>
+          <textarea id="serviceShortDescInput" rows="2" placeholder="وصف قصير وجذاب..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>الصورة الرئيسية للخدمة</label>
+          <div id="serviceImageUploadWidget"></div>
+        </div>
+
+        <div class="form-group">
+          <label>الوصف الكامل (يظهر في صفحة الخدمة المستقلة)</label>
+          <div id="serviceQuillEditor" style="height: 250px; background:#fff;"></div>
+        </div>
+
+        <div class="form-group">
+          <label>مميزات الخدمة (اكتب كل ميزة في سطر)</label>
+          <textarea id="serviceFeaturesInput" rows="4" placeholder="فريق فني متخصص
+ضمان على التنفيذ
+أسعار تنافسية
+سرعة في الإنجاز"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>معرض صور إضافي للخدمة</label>
+          <div id="serviceGalleryUploadWidget"></div>
+          <button type="button" class="btn btn-sm btn-outline" onclick="addServiceGalleryImage()">
+            <i class="fas fa-plus"></i> إضافة صورة أخرى للمعرض
+          </button>
+          <div id="serviceGalleryPreviewList" class="gallery-manage-list"></div>
+        </div>
+
+        <hr class="form-divider" />
+        <h4><i class="fas fa-search"></i> إعدادات السيو (SEO)</h4>
+
+        <div class="form-group">
+          <label>عنوان الصفحة (Meta Title)</label>
+          <input type="text" id="serviceMetaTitleInput" placeholder="يُترك فارغاً لاستخدام اسم الخدمة" />
+        </div>
+
+        <div class="form-group">
+          <label>وصف الصفحة (Meta Description)</label>
+          <textarea id="serviceMetaDescInput" rows="2" placeholder="وصف مختصر يظهر في نتائج البحث (150-160 حرف)"></textarea>
+          <small id="metaDescCounter">0 حرف</small>
         </div>
       </div>
-      <div class="admin-table-wrap">
-        <table>
-          <thead><tr><th>الأيقونة</th><th>العنوان</th><th>الوصف</th><th>إجراءات</th></tr></thead>
-          <tbody id="servicesTable"></tbody>
-        </table>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeServiceForm()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveServiceForm()">
+          <i class="fas fa-save"></i> حفظ الخدمة
+        </button>
       </div>
     </div>
-
+  </div>
+</div>
     <!-- Testimonials -->
     <div class="tab-content" id="tab-testimonials" style="display:none;">
       <div class="admin-topbar"><h1>آراء العملاء</h1></div>

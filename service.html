@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">تفاصيل الخدمة | شركة الممتاز للأعمال الكهربائية</title>
+  <meta id="metaDesc" name="description" content="خدمات كهربائية احترافية في جازان" />
+  <meta id="ogTitle" property="og:title" content="شركة الممتاز" />
+  <meta id="ogDesc" property="og:description" content="" />
+  <meta id="ogImage" property="og:image" content="" />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" id="canonicalLink" href="" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script type="application/ld+json" id="schemaService"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="main-header" id="mainHeader">
+    <nav class="navbar container">
+      <a href="index.html" class="logo">
+        <img src="assets/logo.svg" alt="شعار شركة الممتاز" />
+        <span>الممتاز</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li><a href="services.html">خدماتنا</a></li>
+        <li><a href="about.html">من نحن</a></li>
+        <li><a href="articles.html">المقالات</a></li>
+        <li><a href="contact.html">تواصل معنا</a></li>
+      </ul>
+      <a href="#" class="nav-phone" data-dynamic="whatsappLink">
+        <i class="fab fa-whatsapp"></i> <span data-dynamic="phone">اتصل بنا</span>
+      </a>
+      <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+    </nav>
+  </header>
+
+  <!-- Breadcrumb -->
+  <section class="service-breadcrumb">
+    <div class="container">
+      <nav class="breadcrumb-nav">
+        <a href="index.html">الرئيسية</a>
+        <i class="fas fa-chevron-left"></i>
+        <a href="services.html">الخدمات</a>
+        <i class="fas fa-chevron-left"></i>
+        <span id="breadcrumbCurrent">...</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Service Hero -->
+  <section class="service-hero" id="serviceHero">
+    <div class="container service-hero-grid">
+      <div class="service-hero-text">
+        <div class="service-icon-badge"><i id="serviceIcon" class="fas fa-bolt"></i></div>
+        <h1 id="serviceTitle">جاري التحميل...</h1>
+        <p id="serviceShortDesc"></p>
+        <div class="service-hero-actions">
+          <a href="#" class="btn btn-primary" data-dynamic="whatsappLink">
+            <i class="fab fa-whatsapp"></i> اطلب الخدمة الآن
+          </a>
+          <a href="tel:" class="btn btn-outline" data-dynamic="phoneLink">
+            <i class="fas fa-phone"></i> اتصل بنا
+          </a>
+        </div>
+      </div>
+      <div class="service-hero-image">
+        <img id="serviceMainImage" src="" alt="" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Full description + Features -->
+  <section class="section service-content-section">
+    <div class="container service-content-grid">
+      <div class="service-full-description" id="serviceFullDescription">
+        <!-- محتوى المحرر الغني -->
+      </div>
+
+      <aside class="service-sidebar">
+        <div class="service-features-card">
+          <h3><i class="fas fa-check-circle"></i> مميزات الخدمة</h3>
+          <ul id="serviceFeaturesList"></ul>
+        </div>
+
+        <div class="service-cta-card">
+          <h3>تحتاج هذه الخدمة؟</h3>
+          <p>تواصل معنا الآن واحصل على استشارة مجانية</p>
+          <a href="#" class="btn btn-primary btn-block" data-dynamic="whatsappLink">
+            <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
+          </a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="section service-gallery-section" id="serviceGallerySection" style="display:none">
+    <div class="container">
+      <h2 class="section-title">صور من أعمالنا في هذه الخدمة</h2>
+      <div class="gallery-grid" id="serviceGalleryGrid"></div>
+    </div>
+  </section>
+
+  <!-- Related Services -->
+  <section class="section related-services-section">
+    <div class="container">
+      <h2 class="section-title">خدمات أخرى قد تهمك</h2>
+      <div class="services-grid" id="relatedServicesGrid"></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>هل تحتاج مساعدة في مشروعك الكهربائي؟</h2>
+      <p>فريقنا جاهز لخدمتك في جازان والمناطق المجاورة</p>
+      <a href="#" class="btn btn-light" data-dynamic="whatsappLink">
+        <i class="fab fa-whatsapp"></i> تواصل معنا الآن
+      </a>
+    </div>
+  </section>
+
+  <footer class="main-footer">
+    <div class="container">
+      <p>© 2024 شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
+    </div>
+  </footer>
+
+  <a href="#" class="whatsapp-float" data-dynamic="whatsappLink">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="assets/firebase-config.js"></script>
+  <script src="js/image-upload.js"></script>
+  <script src="js/site-data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/service-page.js"></script>
+</body>
+</html>

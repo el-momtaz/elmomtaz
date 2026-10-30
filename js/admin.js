@@ -52,6 +52,233 @@ function switchTab(tabName){
   if(tabName==='gallery') loadGalleryManage();
   if(tabName==='messages') loadMessagesTab();
 }
+// ============================
+// إدارة الخدمات (Admin)
+// ============================
+
+let serviceQuill = null;
+let currentServiceGallery = [];
+
+// تهيئة محرر Quill الخاص بوصف الخدمة (يُستدعى مرة واحدة)
+function initServiceQuillEditor() {
+  if (serviceQuill) return; // تجنب التهيئة المكررة
+  serviceQuill = new Quill("#serviceQuillEditor", {
+    theme: "snow",
+    placeholder: "اكتب وصفاً تفصيلياً للخدمة...",
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"],
+      ],
+    },
+  });
+}
+
+// تحميل جدول الخدمات
+async function loadServicesTable() {
+  const tbody = document.getElementById("servicesTableBody");
+  tbody.innerHTML = `<tr><td colspan="5" class="text-center">جاري التحميل...</td></tr>`;
+
+  const services = await getServices();
+
+  if (services.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center">لا توجد خدمات مضافة بعد</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = services
+    .map(
+      (s) => `
+    <tr>
+      <td><img src="${s.image ? optimizedImageUrl(s.image, 100) : 'assets/logo.svg'}" alt="${s.title}"></td>
+      <td><strong>${s.title}</strong></td>
+      <td>${(s.shortDesc || "").substring(0, 50)}${s.shortDesc && s.shortDesc.length > 50 ? "..." : ""}</td>
+      <td><a href="service.html?slug=${s.slug}" target="_blank" style="color:#2563eb">${s.slug}</a></td>
+      <td>
+        <div class="action-icons-group">
+          <button class="icon-btn" onclick="editService('${s.id}')" title="تعديل"><i class="fas fa-edit"></i></button>
+          <button class="icon-btn danger" onclick="removeService('${s.id}')" title="حذف"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `
+    )
+    .join("");
+}
+
+// فتح نموذج إضافة خدمة جديدة (فارغ)
+function openServiceForm() {
+  document.getElementById("serviceFormTitle").textContent = "إضافة خدمة جديدة";
+  document.getElementById("serviceId").value = "";
+  document.getElementById("serviceTitleInput").value = "";
+  document.getElementById("serviceIconInput").value = "fas fa-bolt";
+  document.getElementById("serviceSlugInput").value = "";
+  document.getElementById("serviceShortDescInput").value = "";
+  document.getElementById("serviceFeaturesInput").value = "";
+  document.getElementById("serviceMetaTitleInput").value = "";
+  document.getElementById("serviceMetaDescInput").value = "";
+  currentServiceGallery = [];
+
+  document.getElementById("serviceFormModal").style.display = "flex";
+
+  // تهيئة widget الصورة الرئيسية
+  createImageUploadWidget("serviceImageUploadWidget", "", () => {});
+
+  // تهيئة widget صورة المعرض المؤقت
+  createImageUploadWidget("serviceGalleryUploadWidget", "", (url) => {
+    currentServiceGallery.push(url);
+    renderServiceGalleryPreview();
+    // إعادة تهيئة الـ widget لصورة جديدة
+    createImageUploadWidget("serviceGalleryUploadWidget", "", arguments.callee);
+  });
+
+  renderServiceGalleryPreview();
+
+  // تهيئة Quill وتفريغه
+  initServiceQuillEditor();
+  serviceQuill.root.innerHTML = "";
+
+  // عداد حروف الميتا ديسكريبشن
+  setupMetaDescCounter();
+}
+
+// عرض/تحديث صور المعرض المؤقتة أثناء التحرير
+function renderServiceGalleryPreview() {
+  const container = document.getElementById("serviceGalleryPreviewList");
+  container.innerHTML = currentServiceGallery
+    .map(
+      (url, index) => `
+    <div class="gallery-manage-item">
+      <img src="${optimizedImageUrl(url, 150)}" alt="صورة">
+      <button type="button" class="remove-img-btn" onclick="removeServiceGalleryImage(${index})">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>`
+    )
+    .join("");
+}
+
+function removeServiceGalleryImage(index) {
+  currentServiceGallery.splice(index, 1);
+  renderServiceGalleryPreview();
+}
+
+function addServiceGalleryImage() {
+  // إعادة تعيين widget المعرض لرفع صورة جديدة (الزر موجود أصلاً، فقط تنبيه بصري)
+  document.getElementById("serviceGalleryUploadWidget").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// عداد حروف الميتا ديسكريبشن
+function setupMetaDescCounter() {
+  const input = document.getElementById("serviceMetaDescInput");
+  const counter = document.getElementById("metaDescCounter");
+
+  function update() {
+    const len = input.value.length;
+    counter.textContent = `${len} حرف`;
+    counter.style.color = len > 160 ? "#dc2626" : len < 50 && len > 0 ? "#d97706" : "#16a34a";
+  }
+
+  input.removeEventListener("input", update);
+  input.addEventListener("input", update);
+  update();
+}
+
+// فتح نموذج تعديل خدمة موجودة
+async function editService(id) {
+  const service = await getServiceById(id);
+  if (!service) return showToast("لم يتم العثور على الخدمة", "error");
+
+  document.getElementById("serviceFormTitle").textContent = "تعديل الخدمة";
+  document.getElementById("serviceId").value = service.id;
+  document.getElementById("serviceTitleInput").value = service.title || "";
+  document.getElementById("serviceIconInput").value = service.icon || "fas fa-bolt";
+  document.getElementById("serviceSlugInput").value = service.slug || "";
+  document.getElementById("serviceShortDescInput").value = service.shortDesc || "";
+  document.getElementById("serviceFeaturesInput").value = (service.features || []).join("\n");
+  document.getElementById("serviceMetaTitleInput").value = service.metaTitle || "";
+  document.getElementById("serviceMetaDescInput").value = service.metaDescription || "";
+  currentServiceGallery = service.gallery ? [...service.gallery] : [];
+
+  document.getElementById("serviceFormModal").style.display = "flex";
+
+  createImageUploadWidget("serviceImageUploadWidget", service.image || "", () => {});
+
+  createImageUploadWidget("serviceGalleryUploadWidget", "", function handler(url) {
+    currentServiceGallery.push(url);
+    renderServiceGalleryPreview();
+    createImageUploadWidget("serviceGalleryUploadWidget", "", handler);
+  });
+
+  renderServiceGalleryPreview();
+
+  initServiceQuillEditor();
+  serviceQuill.root.innerHTML = service.fullDescription || "";
+
+  setupMetaDescCounter();
+}
+
+function closeServiceForm() {
+  document.getElementById("serviceFormModal").style.display = "none";
+}
+
+// حفظ الخدمة (إضافة أو تعديل)
+async function saveServiceForm() {
+  const id = document.getElementById("serviceId").value;
+  const title = document.getElementById("serviceTitleInput").value.trim();
+
+  if (!title) {
+    showToast("يرجى إدخال اسم الخدمة", "error");
+    return;
+  }
+
+  const featuresRaw = document.getElementById("serviceFeaturesInput").value.trim();
+  const features = featuresRaw ? featuresRaw.split("\n").map((f) => f.trim()).filter(Boolean) : [];
+
+  const data = {
+    title: title,
+    icon: document.getElementById("serviceIconInput").value.trim() || "fas fa-bolt",
+    slug: document.getElementById("serviceSlugInput").value.trim() || generateSlug(title),
+    shortDesc: document.getElementById("serviceShortDescInput").value.trim(),
+    image: getImageWidgetValue("serviceImageUploadWidget"),
+    gallery: currentServiceGallery,
+    fullDescription: serviceQuill ? serviceQuill.root.innerHTML : "",
+    features: features,
+    metaTitle: document.getElementById("serviceMetaTitleInput").value.trim(),
+    metaDescription: document.getElementById("serviceMetaDescInput").value.trim(),
+  };
+
+  try {
+    if (id) {
+      await updateService(id, data);
+      showToast("تم تحديث الخدمة بنجاح", "success");
+    } else {
+      await addService(data);
+      showToast("تم إضافة الخدمة بنجاح", "success");
+    }
+    closeServiceForm();
+    loadServicesTable();
+  } catch (e) {
+    showToast("حدث خطأ: " + e.message, "error");
+  }
+}
+
+async function removeService(id) {
+  if (!confirm("هل أنت متأكد من حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.")) return;
+  try {
+    await deleteService(id);
+    showToast("تم حذف الخدمة", "success");
+    loadServicesTable();
+  } catch (e) {
+    showToast("حدث خطأ أثناء الحذف", "error");
+  }
+}
 
 // ============== DASHBOARD ==============
 async function loadDashboard(){
@@ -361,3 +588,4 @@ function importData(event){
 }
 
 function logout(){ auth.signOut().then(()=> window.location.href='login.html'); }
+

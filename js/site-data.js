@@ -44,22 +44,104 @@ async function saveSettings(data){
   await settingsDoc.set(data, { merge: true });
 }
 
-// ---------- الخدمات ----------
-async function getServices(){
-  const snap = await servicesCollection.orderBy('order','asc').get();
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+// ============================
+// إدارة الخدمات (نسخة موسّعة بصفحات مستقلة)
+// ============================
+
+// توليد slug عربي/إنجليزي صديق للروابط
+function generateSlug(text) {
+  return text
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\u0600-\u06FFa-zA-Z0-9-]/g, "")
+    .toLowerCase();
 }
-async function addService(data){
-  const snap = await servicesCollection.get();
-  data.order = snap.size + 1;
-  const ref = await servicesCollection.add(data);
-  return ref.id;
+
+async function getServices() {
+  try {
+    const snapshot = await db.collection("services").orderBy("order", "asc").get();
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (e) {
+    console.error("خطأ في جلب الخدمات:", e);
+    return [];
+  }
 }
-async function updateService(id, data){ await servicesCollection.doc(id).update(data); }
-async function deleteService(id){ await servicesCollection.doc(id).delete(); }
-async function getServiceById(id){
-  const doc = await servicesCollection.doc(id).get();
-  return doc.exists ? { id: doc.id, ...doc.data() } : null;
+
+async function getServiceById(id) {
+  try {
+    const doc = await db.collection("services").doc(id).get();
+    if (!doc.exists) return null;
+    return { id: doc.id, ...doc.data() };
+  } catch (e) {
+    console.error("خطأ في جلب الخدمة:", e);
+    return null;
+  }
+}
+
+async function getServiceBySlug(slug) {
+  try {
+    const snapshot = await db.collection("services").where("slug", "==", slug).limit(1).get();
+    if (snapshot.empty) return null;
+    const doc = snapshot.docs[0];
+    return { id: doc.id, ...doc.data() };
+  } catch (e) {
+    console.error("خطأ في جلب الخدمة بالـ slug:", e);
+    return null;
+  }
+}
+
+/**
+ * إضافة خدمة جديدة
+ * data = {
+ *   title, icon, shortDesc, fullDescription (HTML من محرر غني),
+ *   image, gallery (array of urls), features (array of strings),
+ *   metaTitle, metaDescription, order
+ * }
+ */
+async function addService(data) {
+  try {
+    const slug = data.slug || generateSlug(data.title);
+    const docRef = await db.collection("services").add({
+      title: data.title || "",
+      slug: slug,
+      icon: data.icon || "fas fa-bolt",
+      shortDesc: data.shortDesc || "",
+      fullDescription: data.fullDescription || "",
+      image: data.image || "",
+      gallery: data.gallery || [],
+      features: data.features || [],
+      metaTitle: data.metaTitle || data.title || "",
+      metaDescription: data.metaDescription || data.shortDesc || "",
+      order: data.order !== undefined ? data.order : Date.now(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    return docRef.id;
+  } catch (e) {
+    console.error("خطأ في إضافة الخدمة:", e);
+    throw e;
+  }
+}
+
+async function updateService(id, data) {
+  try {
+    const updateData = { ...data };
+    if (data.title && !data.slug) {
+      updateData.slug = generateSlug(data.title);
+    }
+    await db.collection("services").doc(id).update(updateData);
+  } catch (e) {
+    console.error("خطأ في تحديث الخدمة:", e);
+    throw e;
+  }
+}
+
+async function deleteService(id) {
+  try {
+    await db.collection("services").doc(id).delete();
+  } catch (e) {
+    console.error("خطأ في حذف الخدمة:", e);
+    throw e;
+  }
 }
 
 // ---------- آراء العملاء ----------
