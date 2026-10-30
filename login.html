@@ -6,6 +6,7 @@
 <title>تسجيل الدخول | لوحة تحكم الممتاز</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0D1B2A">
 <link rel="stylesheet" href="css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -16,20 +17,33 @@
     <img src="assets/logo.svg" alt="الممتاز">
     <h2>تسجيل الدخول</h2>
     <p>لوحة تحكم إدارة الموقع</p>
-    <div class="error-msg" id="errorMsg">خطأ في البريد أو كلمة المرور</div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
     <form id="loginForm">
       <div class="form-group">
-        <label>البريد الإلكتروني</label>
-        <input type="email" id="username" required placeholder="admin@example.com">
+        <label for="username">البريد الإلكتروني</label>
+        <input type="email" id="username" required autocomplete="username" placeholder="admin@example.com">
       </div>
       <div class="form-group">
-        <label>كلمة المرور</label>
-        <input type="password" id="password" required placeholder="أدخل كلمة المرور">
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" required autocomplete="current-password" placeholder="أدخل كلمة المرور">
       </div>
       <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
         <i class="fas fa-sign-in-alt"></i> دخول
       </button>
     </form>
+
+    <div class="demo-login-hint" id="demoHint" style="display:none;">
+      <i class="fas fa-flask"></i>
+      <div>
+        <strong>وضع تجريبي</strong>
+        <p>تعذر الاتصال بـ Firebase. يمكنك الدخول بالبيانات التجريبية:</p>
+        <code>admin@alemtiaz.com / 123456</code>
+        <button type="button" class="btn-link" id="fillDemo">تعبئة تلقائية</button>
+      </div>
+    </div>
+
     <p style="margin-top:20px;"><a href="index.html" style="color:var(--gray);font-size:13px;"><i class="fas fa-arrow-right"></i> العودة للموقع</a></p>
   </div>
 </div>
@@ -37,27 +51,49 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="js/offline-store.js"></script>
 <script src="assets/firebase-config.js"></script>
 <script src="js/auth.js"></script>
 <script>
-  auth.onAuthStateChanged(function(user){
-    if(user) window.location.href = 'admin.html';
+  const errorMsg = document.getElementById('errorMsg');
+  const form = document.getElementById('loginForm');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  // إظهار بيانات الدخول التجريبية عند العمل بدون Firebase
+  if (window.SITE_OFFLINE && window.DEMO_CREDENTIALS) {
+    document.getElementById('demoHint').style.display = 'flex';
+    document.getElementById('fillDemo').addEventListener('click', function () {
+      document.getElementById('username').value = DEMO_CREDENTIALS.email;
+      document.getElementById('password').value = DEMO_CREDENTIALS.password;
+    });
+  }
+
+  // إن كان المستخدم مسجلاً بالفعل، انتقل للوحة التحكم
+  auth.onAuthStateChanged(function (user) {
+    if (user) window.location.href = 'admin.html';
   });
 
-  document.getElementById('loginForm').addEventListener('submit', function(e){
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
-    const email = document.getElementById('username').value;
+    const email = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
-    const errorMsg = document.getElementById('errorMsg');
+
     errorMsg.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الدخول...';
 
     login(email, password)
-      .then(()=> window.location.href = 'admin.html')
-      .catch(function(err){
-        errorMsg.textContent = 'خطأ: البريد أو كلمة المرور غير صحيحة';
+      .then(function () { window.location.href = 'admin.html'; })
+      .catch(function (err) {
+        errorMsg.textContent = firebaseErrorMessage(err);
         errorMsg.style.display = 'block';
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> دخول';
       });
   });
 </script>
+<script src="js/icon-fallback.js"></script>
 </body>
 </html>

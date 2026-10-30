@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خدماتنا | شركة الممتاز للأعمال الكهربائية - جازان</title>
-<meta name="description" content="تعرف على كافة خدماتنا الكهربائية: تأسيس، تشطيب، صيانة، لوحات توزيع في جازان والمناطق المجاورة.">
+<meta name="description" content="جميع الخدمات الكهربائية في جازان: تأسيس، تشطيب، صيانة، لوحات توزيع، إضاءة LED وفحص السلامة من شركة الممتاز.">
+<link rel="canonical" href="services.html">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D1B2A">
 <link rel="stylesheet" href="css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,16 +17,17 @@
 
 <header>
   <div class="container navbar">
-    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="الممتاز"></a>
+    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="شعار شركة الممتاز للأعمال الكهربائية"></a>
     <nav class="nav-links" id="navLinks">
       <a href="index.html">الرئيسية</a>
       <a href="about.html">من نحن</a>
       <a href="services.html" class="active">خدماتنا</a>
+      <a href="booking.html">حجز موعد</a>
       <a href="articles.html">المقالات</a>
       <a href="contact.html">اتصل بنا</a>
     </nav>
-    <a href="tel:+966508980434" class="nav-phone"><i class="fas fa-phone"></i> 0508980434</a>
-    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> <span data-dynamic="phone-text">0508980434</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="القائمة"><i class="fas fa-bars"></i></button>
   </div>
 </header>
 
@@ -36,31 +40,73 @@
 
 <section class="section">
   <div class="container">
+    <div class="section-title">
+      <span>ماذا نقدم</span>
+      <h2>حلول كهربائية متكاملة في جازان</h2>
+      <p>اختر الخدمة لمعرفة تفاصيل التنفيذ والمميزات وطلب عرض السعر</p>
+    </div>
     <div class="services-grid" id="allServicesGrid"></div>
   </div>
 </section>
 
 <section class="cta">
   <div class="container">
-    <h2>احصل على عرض سعر مجاني الآن</h2>
-    <p>تواصل معنا لمعاينة مشروعك وتقديم أفضل عرض سعر</p>
-    <a href="https://wa.me/966508980434" class="btn btn-dark"><i class="fab fa-whatsapp"></i> طلب عرض سعر</a>
+    <h2>لم تجد الخدمة التي تبحث عنها؟</h2>
+    <p>تواصل معنا واشرح احتياجك، وسنرشدك للحل المناسب</p>
+    <a href="booking.html" class="btn btn-primary"><i class="fas fa-calendar-check"></i> احجز موعد زيارة</a>
+    <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="btn btn-dark" style="margin-right:10px;" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> تواصل عبر واتساب</a>
   </div>
 </section>
 
 <footer>
+  <div class="container footer-grid">
+    <div class="footer-col">
+      <div class="footer-logo"><img src="assets/logo-light.svg" alt="الممتاز"></div>
+      <p>شركة الممتاز للأعمال الكهربائية، نقدم خدمات تأسيس وتشطيب كهرباء احترافية في جازان والمناطق المجاورة منذ أكثر من 10 سنوات.</p>
+      <div class="social-links">
+        <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
+        <a href="tel:+966508980434" data-dynamic="phone-link" aria-label="هاتف"><i class="fas fa-phone"></i></a>
+        <a href="#" data-dynamic="twitter-link" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+        <a href="#" data-dynamic="instagram-link" aria-label="إنستغرام"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>روابط سريعة</h4>
+      <ul>
+        <li><a href="about.html">من نحن</a></li>
+        <li><a href="services.html">خدماتنا</a></li>
+        <li><a href="articles.html">المقالات</a></li>
+        <li><a href="contact.html">اتصل بنا</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>تواصل معنا</h4>
+      <p><i class="fas fa-map-marker-alt"></i> <span data-dynamic="address-text">جازان، المملكة العربية السعودية</span></p>
+      <p><i class="fas fa-phone"></i> <a href="tel:+966508980434" data-dynamic="phone-link"><span data-dynamic="phone-text">+966508980434</span></a></p>
+      <p><i class="fas fa-envelope"></i> <a href="mailto:info@alemtiaz-electric.com" data-dynamic="email-link"><span data-dynamic="email-text">info@alemtiaz-electric.com</span></a></p>
+      <p><i class="fas fa-clock"></i> <span data-dynamic="workhours-text">يومياً من 8 صباحاً حتى 10 مساءً</span></p>
+    </div>
+  </div>
   <div class="container footer-bottom">
-    <p>© 2024 شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
+    <p>© <span id="footerYear">2026</span> شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
   </div>
 </footer>
 
-<a href="https://wa.me/966508980434" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="whatsapp-float" target="_blank" rel="noopener" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="js/offline-store.js"></script>
 <script src="assets/firebase-config.js"></script>
 <script src="js/site-data.js"></script>
+<script src="js/image-upload.js"></script>
 <script src="js/main.js"></script>
-<script>applySiteSettings(); renderServices("allServicesGrid");</script>
+<script>
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+  applySiteSettings();
+  renderServices('allServicesGrid');
+</script>
+<script src="js/icon-fallback.js"></script>
 </body>
 </html>

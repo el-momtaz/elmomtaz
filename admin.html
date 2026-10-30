@@ -16,7 +16,7 @@
 
 <div class="admin-layout">
   <aside class="admin-sidebar">
-    <div class="logo"><img src="assets/logo.svg" alt="الممتاز"></div>
+    <div class="logo"><img src="assets/logo-light.svg" alt="الممتاز"></div>
     <nav class="admin-nav">
       <a href="#dashboard" class="nav-item active" data-tab="dashboard"><i class="fas fa-th-large"></i> لوحة البيانات</a>
       <a href="#site-settings" class="nav-item" data-tab="site-settings"><i class="fas fa-sliders-h"></i> إعدادات الموقع</a>
@@ -25,6 +25,7 @@
       <a href="#gallery" class="nav-item" data-tab="gallery"><i class="fas fa-images"></i> معرض الأعمال</a>
       <a href="#articles" class="nav-item" data-tab="articles"><i class="fas fa-newspaper"></i> المقالات</a>
       <a href="#new-article" class="nav-item" data-tab="new-article"><i class="fas fa-plus-circle"></i> مقال جديد</a>
+      <a href="#appointments" class="nav-item" data-tab="appointments"><i class="fas fa-calendar-check"></i> المواعيد <span id="aptBadge" class="badge badge-draft" style="display:none;"></span></a>
       <a href="#messages" class="nav-item" data-tab="messages"><i class="fas fa-envelope"></i> رسائل العملاء <span id="msgBadge" class="badge badge-draft" style="display:none;"></span></a>
       <a href="#backup" class="nav-item" data-tab="backup"><i class="fas fa-database"></i> النسخ الاحتياطي</a>
       <a href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> عرض الموقع</a>
@@ -41,6 +42,7 @@
         <div class="admin-stat"><h3 id="statTotal">0</h3><p><i class="fas fa-newspaper"></i> إجمالي المقالات</p></div>
         <div class="admin-stat"><h3 id="statPublished">0</h3><p><i class="fas fa-check-circle"></i> منشورة</p></div>
         <div class="admin-stat"><h3 id="statServices">0</h3><p><i class="fas fa-bolt"></i> الخدمات</p></div>
+        <div class="admin-stat"><h3 id="statAppointments">0</h3><p><i class="fas fa-calendar-check"></i> مواعيد بانتظار التأكيد</p></div>
         <div class="admin-stat"><h3 id="statMessages">0</h3><p><i class="fas fa-envelope"></i> رسائل جديدة</p></div>
       </div>
       <div class="admin-table-wrap">
@@ -115,7 +117,7 @@
           <div class="form-group"><label>رابط خريطة جوجل (Embed URL)</label><input type="text" id="set_mapEmbedUrl"></div>
         </div>
 
-        <button class="btn btn-primary" onclick="saveSettingsForm()"><i class="fas fa-save"></i> حفظ جميع الإعدادات</button>
+        <button class="btn btn-primary" onclick="saveSettingsForm(this)"><i class="fas fa-save"></i> حفظ جميع الإعدادات</button>
       </div>
     </div>
 
@@ -223,7 +225,7 @@
 
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeServiceForm()">إلغاء</button>
-        <button class="btn btn-primary" onclick="saveServiceForm()">
+        <button class="btn btn-primary" onclick="saveServiceForm(this)">
           <i class="fas fa-save"></i> حفظ الخدمة
         </button>
       </div>
@@ -264,7 +266,11 @@
       <div class="editor-card" style="margin-bottom:25px;">
         <h3 style="color:var(--primary);margin-bottom:18px;">إضافة صورة جديدة</h3>
         <div class="form-row">
-          <div class="form-group"><label>رابط الصورة</label><input type="text" id="gal_image" placeholder="https://..."></div>
+          <div class="form-group">
+            <label>رابط الصورة</label>
+            <input type="text" id="gal_image" placeholder="https://..." dir="ltr">
+            <div id="galleryImageUploadWidget" style="margin-top:10px;"></div>
+          </div>
           <div class="form-group"><label>عنوان الصورة</label><input type="text" id="gal_title" placeholder="تأسيس فيلا - جازان"></div>
         </div>
         <button class="btn btn-primary" onclick="saveGalleryForm()"><i class="fas fa-save"></i> إضافة للمعرض</button>
@@ -307,10 +313,23 @@
         <div class="form-group"><label>وصف مختصر (SEO)</label><textarea id="artExcerpt" rows="3"></textarea></div>
         <div class="form-group"><label>محتوى المقال</label><div id="editor-container"></div></div>
         <div style="display:flex;gap:12px;margin-top:20px;">
-          <button class="btn btn-primary" onclick="saveArticleForm()"><i class="fas fa-save"></i> حفظ المقال</button>
+          <button class="btn btn-primary" onclick="saveArticleForm(this)"><i class="fas fa-save"></i> حفظ المقال</button>
           <button class="btn btn-dark" onclick="switchTab('articles')" type="button">إلغاء</button>
         </div>
       </div>
+    </div>
+
+    <!-- Appointments -->
+    <div class="tab-content" id="tab-appointments" style="display:none;">
+      <div class="admin-topbar"><h1>المواعيد</h1></div>
+      <div class="filter-bar" id="appointmentFilters">
+        <button type="button" class="filter-btn active" data-filter="all">الكل</button>
+        <button type="button" class="filter-btn" data-filter="pending">بانتظار التأكيد</button>
+        <button type="button" class="filter-btn" data-filter="confirmed">مؤكد</button>
+        <button type="button" class="filter-btn" data-filter="done">منجز</button>
+        <button type="button" class="filter-btn" data-filter="cancelled">ملغي</button>
+      </div>
+      <div id="appointmentsContainer"></div>
     </div>
 
     <!-- Messages -->
@@ -340,10 +359,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="assets/firebase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-<script src="js/articles-store.js"></script>
+<script src="js/offline-store.js"></script>
+<script src="assets/firebase-config.js"></script>
 <script src="js/site-data.js"></script>
+<script src="js/articles-store.js"></script>
+<script src="js/image-upload.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/icon-fallback.js"></script>
 </body>
 </html>

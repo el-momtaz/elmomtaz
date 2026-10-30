@@ -8,6 +8,7 @@ const servicesCollection = db.collection('services');
 const testimonialsCollection = db.collection('testimonials');
 const galleryCollection = db.collection('gallery');
 const messagesCollection = db.collection('messages');
+const appointmentsCollection = db.collection('appointments');
 
 const DEFAULT_SETTINGS = {
   phone: "+966508980434",
@@ -57,6 +58,95 @@ function generateSlug(text) {
     .toLowerCase();
 }
 
+// خدمات احتياطية تظهر عند عدم وجود خدمات في قاعدة البيانات (أو تعذر الاتصال)
+// حتى لا تظهر الصفحة فارغة أمام الزائر
+const DEMO_SERVICES = [
+  {
+    id: "demo-taasis",
+    title: "تأسيس كهرباء",
+    slug: "تأسيس-كهرباء",
+    icon: "fas fa-plug",
+    shortDesc: "تأسيس الشبكات الكهربائية للمنازل والفلل والمنشآت وفق المخططات ومعايير السلامة.",
+    fullDescription: "<p>نقوم بتأسيس الكهرباء من الصفر وفق المخططات، من تمديد المواسير داخل الجدران والأسقف إلى توزيع الدوائر على لوحة التوزيع الرئيسية.</p><ul><li>كابلات نحاسية مطابقة للمواصفات.</li><li>ترقيم وتوثيق كل دائرة.</li><li>اختبار العزل قبل اللياسة.</li></ul>",
+    image: "assets/photo-1.jpg",
+    gallery: [],
+    features: ["مطابقة كود البناء السعودي", "كابلات نحاسية أصلية", "ترقيم وتوثيق كل دائرة", "ضمان على التنفيذ"],
+    metaTitle: "تأسيس كهرباء في جازان",
+    metaDescription: "تأسيس كهرباء احترافي للمنازل والفلل والمنشآت في جازان.",
+    order: 1
+  },
+  {
+    id: "demo-tashreeb",
+    title: "تشطيب وتمديدات",
+    slug: "تشطيب-وتمديدات",
+    icon: "fas fa-tools",
+    shortDesc: "تركيب الإضاءة والمفاتيح والأفياش ولوحات التوزيع بتشطيب احترافي.",
+    fullDescription: "<p>تشطيب كهرباء كامل: نقاط الإنارة، المفاتيح والأفياش، المراوح والثريات، وتنظيم لوحة التوزيع مع قواطع تفاضلية.</p>",
+    image: "assets/photo-3.svg",
+    gallery: [],
+    features: ["تركيب إضاءة LED", "قواطع تفاضلية", "تنظيم أسلاك اللوحة", "تنظيف الموقع بعد الانتهاء"],
+    metaTitle: "تشطيب كهرباء في جازان",
+    metaDescription: "تشطيب كهرباء المنازل والفلل بجازان.",
+    order: 2
+  },
+  {
+    id: "demo-maintenance",
+    title: "صيانة وإصلاح الأعطال",
+    slug: "صيانة-وإصلاح",
+    icon: "fas fa-screwdriver-wrench",
+    shortDesc: "تشخيص الأعطال الكهربائية وإصلاحها مع الاهتمام بالسلامة وجودة التنفيذ.",
+    fullDescription: "<p>زيارة فني مختص لتشخيص العطل بالأجهزة المناسبة، مع توضيح السبب والتكلفة قبل بدء الإصلاح.</p>",
+    image: "assets/photo-2.jpg",
+    gallery: [],
+    features: ["تحديد العطل بدقة", "سعر واضح قبل التنفيذ", "خدمة طوارئ", "قطع غيار أصلية"],
+    metaTitle: "صيانة كهرباء جازان",
+    metaDescription: "فني كهربائي للصيانة وإصلاح الأعطال في جازان.",
+    order: 3
+  },
+  {
+    id: "demo-panels",
+    title: "لوحات التوزيع",
+    slug: "لوحات-التوزيع",
+    icon: "fas fa-table-cells-large",
+    shortDesc: "تصميم وتنفيذ لوحات توزيع رئيسية وفرعية بتوزيع أحمال متوازن.",
+    fullDescription: "<p>حساب الأحمال وتوزيعها على الأطوار، اختيار القواطع المناسبة، وتنظيم وترقيم الأسلاك مع مخطط داخل اللوحة.</p>",
+    image: "assets/photo-2.jpg",
+    gallery: [],
+    features: ["حساب أحمال دقيق", "ترتيب وترقيم الأسلاك", "حماية من التماس", "مخطط معتمد داخل اللوحة"],
+    metaTitle: "لوحات توزيع كهرباء جازان",
+    metaDescription: "تصميم وتنفيذ لوحات التوزيع الرئيسية والفرعية في جازان.",
+    order: 4
+  },
+  {
+    id: "demo-lighting",
+    title: "إضاءة LED وحدائق",
+    slug: "إضاءة-ليد",
+    icon: "fas fa-lightbulb",
+    shortDesc: "تركيب إضاءة داخلية وخارجية وكشافات حدائق وواجهات بتوفير في الطاقة.",
+    fullDescription: "<p>اختيار وحدات إضاءة موفرة مناسبة لكل مساحة، مع تركيب كشافات الواجهات والحدائق بعزل جيد ضد الرطوبة.</p>",
+    image: "assets/photo-3.svg",
+    gallery: [],
+    features: ["توفير في الطاقة", "كشافات مقاومة للماء", "توزيع إضاءة مدروس", "ضمان على القطع"],
+    metaTitle: "إضاءة LED في جازان",
+    metaDescription: "تركيب إضاءة LED داخلية وخارجية بجازان مع ضمان.",
+    order: 5
+  },
+  {
+    id: "demo-safety",
+    title: "فحص السلامة الكهربائية",
+    slug: "فحص-السلامة",
+    icon: "fas fa-shield-halved",
+    shortDesc: "فحص التوصيلات واللوحات الكهربائية للمساعدة في رفع مستوى السلامة.",
+    fullDescription: "<p>فحص شامل للوحة الرئيسية ونقاط الأرضي والتوصيلات وقياس مقاومة العزل، مع تقرير بالملاحظات والأولويات.</p>",
+    image: "assets/photo-1.jpg",
+    gallery: [],
+    features: ["فحص نقطة الأرضي", "قياس مقاومة العزل", "تقرير مكتوب", "توصيات مرتبة بالأولوية"],
+    metaTitle: "فحص السلامة الكهربائية جازان",
+    metaDescription: "فحص واختبار السلامة الكهربائية للمنازل والمنشآت في جازان.",
+    order: 6
+  }
+];
+
 async function getServices() {
   try {
     const snapshot = await db.collection("services").orderBy("order", "asc").get();
@@ -65,6 +155,13 @@ async function getServices() {
     console.error("خطأ في جلب الخدمات:", e);
     return [];
   }
+}
+
+// تُستخدم في صفحات العرض العامة: تعيد المحتوى الحقيقي، أو نسخة تجريبية
+// عند عدم وجود بيانات، بدل عرض صفحة فارغة
+async function getServicesWithFallback() {
+  const services = await getServices();
+  return services.length ? services : DEMO_SERVICES;
 }
 
 async function getServiceById(id) {
@@ -88,6 +185,14 @@ async function getServiceBySlug(slug) {
     console.error("خطأ في جلب الخدمة بالـ slug:", e);
     return null;
   }
+}
+
+// نسخة احتياطية: تبحث في قاعدة البيانات أولاً ثم في الخدمات التجريبية
+async function getServiceBySlugWithFallback(slug) {
+  if (!slug) return null;
+  const real = await getServiceBySlug(slug);
+  if (real) return real;
+  return DEMO_SERVICES.find((s) => s.slug === slug || s.id === slug) || null;
 }
 
 /**
@@ -180,3 +285,53 @@ async function getMessages(){
 }
 async function markMessageRead(id){ await messagesCollection.doc(id).update({ read: true }); }
 async function deleteMessage(id){ await messagesCollection.doc(id).delete(); }
+
+// ============================
+// المواعيد (حجز موعد زيارة/معاينة)
+// ============================
+
+const BOOKING_SLOTS = [
+  '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00',
+  '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'
+];
+
+const APPOINTMENT_STATUS = {
+  pending: 'بانتظار التأكيد',
+  confirmed: 'مؤكد',
+  done: 'منجز',
+  cancelled: 'ملغي'
+};
+
+// إضافة موعد: الحقول المسموح بها فقط (مطابقة لقواعد Firestore)
+async function addAppointment(data){
+  const payload = {
+    name: String(data.name || '').trim().slice(0, 100),
+    phone: String(data.phone || '').trim().slice(0, 30),
+    service: String(data.service || '').trim().slice(0, 100),
+    date: String(data.date || '').slice(0, 10),
+    time: String(data.time || '').slice(0, 5),
+    notes: String(data.notes || '').trim().slice(0, 1000),
+    status: 'pending',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  const ref = await appointmentsCollection.add(payload);
+  return ref.id;
+}
+
+async function getAppointments(){
+  try{
+    const snap = await appointmentsCollection.orderBy('createdAt','desc').get();
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }catch(err){
+    console.error('خطأ في جلب المواعيد:', err);
+    throw err;
+  }
+}
+
+async function updateAppointmentStatus(id, status){
+  await appointmentsCollection.doc(id).update({ status });
+}
+
+async function deleteAppointment(id){
+  await appointmentsCollection.doc(id).delete();
+}

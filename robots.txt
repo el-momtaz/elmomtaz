@@ -3,5 +3,5 @@ Allow: /
 Disallow: /admin.html
 Disallow: /login.html
 
-# بعد النشر حدّث رابط خريطة الموقع إلى نطاقك الفعلي
-Sitemap: https://YOUR-DOMAIN/sitemap.xml
+# سطر خريطة الموقع يُضاف تلقائياً بعد تشغيل:
+#   python3 set-domain.py https://your-domain.com

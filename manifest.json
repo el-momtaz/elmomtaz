@@ -1,9 +1,40 @@
 {
   "name": "شركة الممتاز للأعمال الكهربائية",
   "short_name": "الممتاز",
-  "start_url": "/",
+  "description": "تأسيس وتشطيب وصيانة الأعمال الكهربائية في جازان",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#F7F9FC",
   "theme_color": "#0D1B2A",
-  "icons": [{"src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml"}]
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "حجز موعد",
+      "short_name": "حجز",
+      "url": "./booking.html",
+      "icons": [
+        {
+          "src": "assets/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
 }

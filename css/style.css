@@ -534,3 +534,188 @@ table td{padding:16px;border-top:1px solid var(--border);font-size:14px;vertical
 
 .icon-btn.danger { color: #dc2626; }
 .icon-btn:hover { background: #e5e7eb; }
+/* ============================================================
+   إضافات الإصدار الثاني (2026)
+   تُستخدم في صفحتي الخدمات وصفحة الخدمة الواحدة، ولوحة التحكم،
+   وحالات التحميل/الفراغ، وشريط الوضع التجريبي.
+   ============================================================ */
+
+/* ---------- أدوات عامة ---------- */
+.text-center{text-align:center;}
+.section-more{text-align:center;margin-top:40px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.loading-line,.empty-line{grid-column:1/-1;text-align:center;color:var(--gray);padding:40px 20px;font-size:15px;}
+.empty-line{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);}
+.empty-state{grid-column:1/-1;text-align:center;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:60px 25px;}
+.empty-state i{font-size:46px;color:var(--accent-dark);margin-bottom:18px;display:block;}
+.empty-state h2{color:var(--primary);margin-bottom:10px;font-size:24px;}
+.empty-state p{color:var(--gray);margin-bottom:22px;}
+
+/* ---------- كروت الخدمات كروابط ---------- */
+a.service-card{display:block;text-decoration:none;color:inherit;}
+a.service-card:focus-visible{outline:3px solid var(--accent-dark);outline-offset:3px;}
+.service-card-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;color:var(--accent-dark);font-weight:700;font-size:14px;}
+.service-card:hover .service-card-link i{transform:translateX(-5px);}
+.service-card-link i{transition:var(--transition);}
+
+/* ---------- صفحة الخدمة الواحدة ---------- */
+.service-detail{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start;}
+.service-detail-media img{width:100%;border-radius:var(--radius);box-shadow:var(--shadow);display:block;background:var(--white);}
+.service-detail-icon{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:var(--primary);display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:18px;}
+.service-detail-info h1{color:var(--primary);font-size:34px;font-weight:800;margin-bottom:16px;line-height:1.4;}
+.service-detail-lead{color:var(--gray);font-size:17px;margin-bottom:24px;}
+.service-features{list-style:none;display:grid;gap:12px;margin-bottom:30px;}
+.service-features li{display:flex;align-items:flex-start;gap:12px;color:var(--text);font-size:15px;}
+.service-features li i{width:24px;height:24px;border-radius:50%;background:rgba(255,193,7,.2);color:var(--accent-dark);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px;}
+.service-detail-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.service-description-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:40px;margin-top:50px;}
+.service-description-card h2{color:var(--primary);font-size:26px;margin-bottom:20px;}
+
+/* ---------- خطوات العمل ---------- */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;}
+.step-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:30px 24px;text-align:center;position:relative;}
+.step-num{width:44px;height:44px;border-radius:50%;background:var(--primary);color:var(--accent);font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.step-card h4{color:var(--primary);margin-bottom:8px;font-size:18px;}
+.step-card p{color:var(--gray);font-size:14px;}
+
+/* ---------- صور الموقع ---------- */
+.why-img{width:100%;display:block;object-fit:cover;}
+
+/* ---------- نموذج التواصل ---------- */
+.form-hint{color:var(--gray);font-size:13px;margin-bottom:18px;line-height:1.7;}
+.form-message{display:none;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:16px;}
+.form-message.error{display:block;background:#FEE2E2;color:#B91C1C;border:1px solid #FCA5A5;}
+.form-message.success{display:block;background:#DCFCE7;color:#15803D;border:1px solid #86EFAC;}
+.error-msg{display:none;background:#FEE2E2;color:#B91C1C;border:1px solid #FCA5A5;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:18px;}
+
+/* ---------- المقالات ---------- */
+.article-title-link{color:var(--primary);}
+.article-main-title{color:var(--primary);font-size:32px;margin-bottom:20px;line-height:1.5;}
+.article-main-img{width:100%;border-radius:12px;margin-bottom:25px;display:block;background:var(--white);}
+.share-label{font-weight:700;color:var(--primary);}
+.article-body-content img{max-width:100%;height:auto;border-radius:10px;}
+
+/* ---------- تسجيل الدخول: بيانات تجريبية ---------- */
+.demo-login-hint{display:flex;gap:12px;text-align:right;background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:14px 16px;margin-top:18px;font-size:13px;color:#92400E;line-height:1.7;}
+.demo-login-hint i{font-size:18px;margin-top:3px;}
+.demo-login-hint strong{display:block;margin-bottom:4px;}
+.demo-login-hint code{display:inline-block;background:#fff;border:1px dashed #F59E0B;border-radius:6px;padding:3px 8px;margin-top:6px;direction:ltr;font-size:12px;}
+.btn-link{display:block;background:none;border:none;padding:0;margin-top:8px;color:#B45309;font-size:12px;text-decoration:underline;cursor:pointer;}
+
+/* ---------- لوحة التحكم ---------- */
+.admin-toast{position:fixed;top:24px;left:50%;transform:translate(-50%,-140%);background:var(--primary);color:#fff;padding:14px 26px;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.25);font-weight:700;font-size:14px;z-index:9999;transition:transform .35s ease;max-width:90vw;text-align:center;}
+.admin-toast.show{transform:translate(-50%,0);}
+.admin-toast.success{background:#15803D;}
+.admin-toast.error{background:#B91C1C;}
+.editor-textarea-fallback{width:100%;min-height:220px;border:1px solid #D8E0EA;border-radius:10px;padding:14px;font-family:inherit;font-size:14px;line-height:1.8;direction:rtl;resize:vertical;}
+.editor-textarea-fallback:focus{outline:2px solid var(--accent-dark);outline-offset:0;}
+#serviceQuillEditor{min-height:250px;background:#fff;border-radius:10px;}
+.modal-box.modal-large{max-width:900px;width:95%;}
+.msg-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--gray);margin:10px 0;}
+.msg-card.unread{border-right:4px solid var(--accent);}
+
+/* ---------- شارة الوضع التجريبي ---------- */
+.offline-badge{position:fixed;bottom:18px;left:18px;z-index:9000;display:flex;align-items:center;gap:8px;background:rgba(13,27,42,.92);color:#FFC107;font-size:12px;font-weight:700;padding:8px 12px;border-radius:999px;box-shadow:0 10px 25px rgba(0,0,0,.25);backdrop-filter:blur(4px);}
+.offline-badge button{background:none;border:none;color:#fff;font-size:16px;line-height:1;cursor:pointer;padding:0 2px;}
+
+/* ---------- استجابة الشاشات ---------- */
+@media(max-width:900px){
+  .service-detail{grid-template-columns:1fr;gap:30px;}
+  .service-description-card{padding:26px;}
+  .service-detail-info h1{font-size:27px;}
+  .article-main-title{font-size:26px;}
+  .admin-toast{width:90%;padding:12px 18px;}
+}
+
+/* ---------- صفحة 404 ---------- */
+.error-page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--primary);color:#fff;padding:40px 20px;}
+.error-page h1{font-size:110px;line-height:1;color:var(--accent);font-weight:900;margin-bottom:10px;}
+.error-page h2{font-size:26px;margin-bottom:12px;}
+.error-page p{color:#B9C3D1;margin-bottom:30px;max-width:420px;}
+.error-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+
+/* ============================================================
+   صفحة حجز المواعيد + حالات المواعيد في لوحة التحكم
+   ============================================================ */
+.booking-layout{display:grid;grid-template-columns:1.6fr 1fr;gap:35px;align-items:start;}
+.booking-form-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:38px;}
+.booking-form-card h2{color:var(--primary);font-size:24px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.booking-form-card h2 i{color:var(--accent-dark);}
+.booking-sub{color:var(--gray);font-size:14px;margin-bottom:26px;line-height:1.8;}
+.req{color:#DC2626;}
+.field-hint{display:block;color:var(--gray);font-size:12px;margin-top:8px;}
+.field-hint i{color:var(--accent-dark);}
+
+.slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:6px;}
+.slot{
+  border:1.5px solid #DCE3EC;background:var(--white);color:var(--primary);
+  padding:11px 6px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:600;
+  cursor:pointer;transition:var(--transition);
+}
+.slot:hover:not(:disabled){border-color:var(--accent-dark);background:#FFFBEB;}
+.slot.is-selected{background:var(--primary);border-color:var(--primary);color:var(--accent);}
+.slot.is-passed{opacity:.45;cursor:not-allowed;background:#F1F4F8;color:#94A3B8;text-decoration:line-through;}
+
+.booking-submit{width:100%;justify-content:center;margin-top:6px;}
+.booking-privacy{color:var(--gray);font-size:12px;margin-top:14px;text-align:center;}
+.booking-privacy i{color:var(--accent-dark);}
+
+.booking-side{display:grid;gap:22px;}
+.booking-info-card,.booking-contact-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;}
+.booking-info-card h3,.booking-contact-card h3{color:var(--primary);font-size:18px;margin-bottom:18px;}
+.booking-steps{list-style:none;display:grid;gap:16px;}
+.booking-steps li{display:flex;gap:14px;align-items:flex-start;color:var(--text);font-size:14px;line-height:1.7;}
+.booking-steps li span{width:28px;height:28px;flex-shrink:0;border-radius:50%;background:rgba(255,193,7,.2);color:var(--accent-dark);font-weight:800;display:inline-flex;align-items:center;justify-content:center;font-size:13px;}
+.booking-contact-row{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid #EEF2F7;color:inherit;}
+.booking-contact-row:last-child{border-bottom:none;}
+.booking-contact-row i{width:38px;height:38px;border-radius:10px;background:var(--bg);color:var(--accent-dark);display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.booking-contact-row strong{display:block;color:var(--primary);font-size:14px;}
+.booking-contact-row small{color:var(--gray);font-size:12.5px;}
+.booking-contact-row:hover i{background:var(--accent);color:var(--primary);}
+
+.booking-success{text-align:center;padding:10px 0;}
+.success-icon{width:74px;height:74px;border-radius:50%;background:#DCFCE7;color:#15803D;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 18px;}
+.booking-success h3{color:var(--primary);font-size:22px;margin-bottom:8px;}
+.booking-success p{color:var(--gray);font-size:14px;margin-bottom:22px;}
+.booking-summary{list-style:none;display:grid;gap:1px;background:#EEF2F7;border-radius:12px;overflow:hidden;margin-bottom:24px;text-align:right;}
+.booking-summary li{display:flex;align-items:center;gap:12px;background:var(--white);padding:13px 16px;font-size:14px;}
+.booking-summary li i{color:var(--accent-dark);width:18px;text-align:center;}
+.booking-summary li span{color:var(--gray);min-width:60px;}
+.booking-summary li strong{color:var(--primary);margin-inline-start:auto;}
+.booking-success-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+/* حالات المواعيد */
+.status-badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;}
+.status-pending{background:#FEF3C7;color:#92400E;}
+.status-confirmed{background:#DBEAFE;color:#1E40AF;}
+.status-done{background:#DCFCE7;color:#15803D;}
+.status-cancelled{background:#FEE2E2;color:#B91C1C;}
+.appointment-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:22px;margin-bottom:16px;border-right:4px solid #E2E8F0;}
+.appointment-card.status-pending{border-right-color:#F59E0B;}
+.appointment-card.status-confirmed{border-right-color:#2563EB;}
+.appointment-card.status-done{border-right-color:#16A34A;}
+.appointment-card.status-cancelled{border-right-color:#DC2626;opacity:.75;}
+.appointment-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+.appointment-head h4{color:var(--primary);font-size:17px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.appointment-when{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--gray);margin-bottom:10px;}
+.appointment-when span{display:inline-flex;align-items:center;gap:7px;}
+.appointment-notes{background:var(--bg);border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--text);margin-bottom:14px;line-height:1.7;}
+.appointment-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
+.filter-btn{background:var(--white);border:1.5px solid #DCE3EC;color:var(--primary);padding:9px 18px;border-radius:999px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;transition:var(--transition);}
+.filter-btn:hover{border-color:var(--accent-dark);}
+.filter-btn.active{background:var(--primary);border-color:var(--primary);color:var(--accent);}
+
+@media(max-width:900px){
+  .booking-layout{grid-template-columns:1fr;}
+  .booking-form-card{padding:24px;}
+  .slot-grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));}
+}
+
+
+/* ---------- زر ذهبي للحجز + ضبط القائمة بعد إضافة رابط الحجز ---------- */
+.btn-accent{background:var(--accent);color:var(--primary);box-shadow:0 10px 25px rgba(255,193,7,.35);}
+.btn-accent:hover{background:var(--accent-dark);color:var(--primary);}
+@media(max-width:1200px){
+  .nav-links{gap:20px;}
+  .nav-links a{font-size:14px;}
+}

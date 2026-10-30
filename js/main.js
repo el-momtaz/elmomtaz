@@ -1,214 +1,321 @@
-document.addEventListener('DOMContentLoaded', function(){
+// ==========================================
+// main.js — منطق الموقع العام (الواجهة)
+// ==========================================
+
+const PLACEHOLDER_IMAGE = 'assets/placeholder.svg';
+
+// ---------- القائمة في الجوال ----------
+document.addEventListener('DOMContentLoaded', function () {
   const menuToggle = document.getElementById('menuToggle');
   const navLinks = document.getElementById('navLinks');
-  if(menuToggle){
-    menuToggle.addEventListener('click', function(){
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', function () {
       navLinks.classList.toggle('active');
       const icon = menuToggle.querySelector('i');
+      if (!icon) return;
       icon.classList.toggle('fa-bars');
       icon.classList.toggle('fa-times');
     });
   }
-  document.querySelectorAll('.nav-links a').forEach(link=>{
-    link.addEventListener('click', ()=> navLinks.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      if (navLinks) navLinks.classList.remove('active');
+    });
   });
 });
 
 // ==========================================
 // تطبيق إعدادات الموقع على كل عناصر data-dynamic
 // ==========================================
-async function applySiteSettings(){
+async function applySiteSettings() {
   let s;
-  try{ s = await getSettings(); }catch(err){ console.error(err); return; }
+  try {
+    s = await getSettings();
+  } catch (err) {
+    console.error(err);
+    return;
+  }
+  if (!s) return;
 
-  document.querySelectorAll('[data-dynamic="phone-link"]').forEach(el => el.setAttribute('href','tel:'+s.phone));
-  document.querySelectorAll('[data-dynamic="phone-text"]').forEach(el => el.textContent = s.phone);
-  document.querySelectorAll('[data-dynamic="whatsapp-link"]').forEach(el => el.setAttribute('href','https://wa.me/'+s.whatsapp.replace(/[^0-9]/g,'')));
-  document.querySelectorAll('[data-dynamic="email-text"]').forEach(el => el.textContent = s.email);
-  document.querySelectorAll('[data-dynamic="address-text"]').forEach(el => el.textContent = s.address);
-  document.querySelectorAll('[data-dynamic="workhours-text"]').forEach(el => el.textContent = s.workHours);
-  document.querySelectorAll('[data-dynamic="facebook-link"]').forEach(el => el.setAttribute('href', s.facebook));
-  document.querySelectorAll('[data-dynamic="twitter-link"]').forEach(el => el.setAttribute('href', s.twitter));
-  document.querySelectorAll('[data-dynamic="instagram-link"]').forEach(el => el.setAttribute('href', s.instagram));
+  const setAttr = function (selector, attr, value) {
+    document.querySelectorAll(selector).forEach(function (el) {
+      if (value) el.setAttribute(attr, value);
+    });
+  };
+  const setText = function (selector, value) {
+    document.querySelectorAll(selector).forEach(function (el) {
+      if (value != null) el.textContent = value;
+    });
+  };
+
+  const waNumber = String(s.whatsapp || '').replace(/[^0-9]/g, '');
+
+  setAttr('[data-dynamic="phone-link"]', 'href', s.phone ? 'tel:' + s.phone : '');
+  setText('[data-dynamic="phone-text"]', s.phone);
+  setAttr('[data-dynamic="whatsapp-link"]', 'href', waNumber ? 'https://wa.me/' + waNumber : '');
+  setText('[data-dynamic="email-text"]', s.email);
+  setAttr('[data-dynamic="email-link"]', 'href', s.email ? 'mailto:' + s.email : '');
+  setText('[data-dynamic="address-text"]', s.address);
+  setText('[data-dynamic="workhours-text"]', s.workHours);
+  setAttr('[data-dynamic="facebook-link"]', 'href', s.facebook);
+  setAttr('[data-dynamic="twitter-link"]', 'href', s.twitter);
+  setAttr('[data-dynamic="instagram-link"]', 'href', s.instagram);
 
   const heroBadge = document.getElementById('heroBadgeText');
-  if(heroBadge) heroBadge.textContent = s.heroBadge;
-  const p1 = document.getElementById('heroTitlePart1'); if(p1) p1.textContent = s.heroTitlePart1;
-  const hl = document.getElementById('heroHighlight'); if(hl) hl.textContent = s.heroHighlight;
-  const p2 = document.getElementById('heroTitlePart2'); if(p2) p2.textContent = s.heroTitlePart2;
-  const desc = document.getElementById('heroDescription'); if(desc) desc.textContent = s.heroDescription;
+  if (heroBadge) heroBadge.textContent = s.heroBadge;
+  const p1 = document.getElementById('heroTitlePart1'); if (p1) p1.textContent = s.heroTitlePart1;
+  const hl = document.getElementById('heroHighlight'); if (hl) hl.textContent = s.heroHighlight;
+  const p2 = document.getElementById('heroTitlePart2'); if (p2) p2.textContent = s.heroTitlePart2;
+  const desc = document.getElementById('heroDescription'); if (desc) desc.textContent = s.heroDescription;
 
   const statsBox = document.getElementById('heroStats');
-  if(statsBox){
-    statsBox.innerHTML = `
-      <div class="stat-box"><h3>${s.stat1Number}</h3><p>${s.stat1Label}</p></div>
-      <div class="stat-box"><h3>${s.stat2Number}</h3><p>${s.stat2Label}</p></div>
-      <div class="stat-box"><h3>${s.stat3Number}</h3><p>${s.stat3Label}</p></div>
-      <div class="stat-box"><h3>${s.stat4Number}</h3><p>${s.stat4Label}</p></div>
-    `;
+  if (statsBox) {
+    statsBox.innerHTML =
+      '<div class="stat-box"><h3>' + esc(s.stat1Number) + '</h3><p>' + esc(s.stat1Label) + '</p></div>' +
+      '<div class="stat-box"><h3>' + esc(s.stat2Number) + '</h3><p>' + esc(s.stat2Label) + '</p></div>' +
+      '<div class="stat-box"><h3>' + esc(s.stat3Number) + '</h3><p>' + esc(s.stat3Label) + '</p></div>' +
+      '<div class="stat-box"><h3>' + esc(s.stat4Number) + '</h3><p>' + esc(s.stat4Label) + '</p></div>';
   }
 
-  const a1 = document.getElementById('aboutText1'); if(a1) a1.textContent = s.aboutText1;
-  const a2 = document.getElementById('aboutText2'); if(a2) a2.textContent = s.aboutText2;
+  const a1 = document.getElementById('aboutText1'); if (a1) a1.textContent = s.aboutText1;
+  const a2 = document.getElementById('aboutText2'); if (a2) a2.textContent = s.aboutText2;
 
   const mapFrame = document.getElementById('mapFrame');
-  if(mapFrame) mapFrame.setAttribute('src', s.mapEmbedUrl);
+  if (mapFrame && s.mapEmbedUrl) mapFrame.setAttribute('src', s.mapEmbedUrl);
 
   return s;
 }
 
 // ==========================================
-// عرض الخدمات ديناميكياً
+// الخدمات
 // ==========================================
-async function renderServices(containerId, limit){
+async function renderServices(containerId, limit) {
   const container = document.getElementById(containerId);
-  if(!container) return;
-  container.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:var(--gray);padding:30px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</p>';
-  try{
-    let services = await getServices();
-    // محتوى افتراضي حتى تظهر الخدمات قبل إضافة سجلات Firestore لأول مرة
-    if(services.length === 0){
-      services = [
-        {icon:'fas fa-plug', title:'تأسيس كهرباء', description:'تأسيس الشبكات الكهربائية للمنازل والفلل والمنشآت وفق المخططات ومعايير السلامة.'},
-        {icon:'fas fa-lightbulb', title:'تشطيب كهرباء', description:'تركيب الإضاءة والمفاتيح والأفياش واللوحات الكهربائية بتشطيب احترافي.'},
-        {icon:'fas fa-tools', title:'صيانة وإصلاح', description:'تشخيص الأعطال الكهربائية وإصلاحها مع الاهتمام بالسلامة وجودة التنفيذ.'},
-        {icon:'fas fa-bolt', title:'إصلاح التماسات', description:'فحص التماسات ومشكلات القواطع والتوصيلات ومعالجة أسباب الخلل.'},
-        {icon:'fas fa-house', title:'تمديدات كهربائية', description:'تمديدات داخلية وخارجية للمشاريع الجديدة والتجديدات حسب احتياج الموقع.'},
-        {icon:'fas fa-shield-halved', title:'فحص السلامة', description:'فحص التوصيلات واللوحات الكهربائية للمساعدة في رفع مستوى السلامة.'}
-      ];
-    }
+  if (!container) return;
+
+  container.innerHTML = '<p class="loading-line"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</p>';
+
+  try {
+    const services = await getServicesWithFallback();
     const list = limit ? services.slice(0, limit) : services;
-    container.innerHTML = list.map(s => `
-      <div class="service-card">
-        <div class="service-icon"><i class="${s.icon}"></i></div>
-        <h3>${s.title}</h3>
-        <p>${s.description}</p>
-      </div>
-    `).join('');
-  }catch(err){
+
+    if (!list.length) {
+      container.innerHTML = '<p class="empty-line">سيتم إضافة الخدمات قريباً</p>';
+      return;
+    }
+
+    container.innerHTML = list
+      .map(function (s) {
+        const slug = s.slug || s.id || '';
+        const desc = s.shortDesc || s.description || '';
+        return (
+          '<a class="service-card" href="service.html?slug=' + encodeURIComponent(slug) + '">' +
+            '<div class="service-icon"><i class="' + esc(s.icon || 'fas fa-bolt') + '"></i></div>' +
+            '<h3>' + esc(s.title) + '</h3>' +
+            '<p>' + esc(desc) + '</p>' +
+            '<span class="service-card-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></span>' +
+          '</a>'
+        );
+      })
+      .join('');
+  } catch (err) {
     console.error(err);
-    container.innerHTML = '<p style="text-align:center;color:red;grid-column:1/-1;">تعذر تحميل الخدمات</p>';
+    container.innerHTML = '<p class="empty-line">تعذر تحميل الخدمات، حاول تحديث الصفحة.</p>';
   }
 }
 
 // ==========================================
-// عرض آراء العملاء
+// آراء العملاء
 // ==========================================
-async function renderTestimonials(containerId){
+async function renderTestimonials(containerId) {
   const container = document.getElementById(containerId);
-  if(!container) return;
-  try{
+  if (!container) return;
+  try {
     const items = await getTestimonials();
-    if(items.length === 0){
-      container.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1;">لا توجد آراء بعد</p>';
+    if (!items.length) {
+      container.innerHTML = '<p class="empty-line">لا توجد آراء منشورة بعد</p>';
       return;
     }
-    container.innerHTML = items.map(t => `
-      <div class="testimonial-card">
-        <div class="stars">${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}</div>
-        <p>"${t.text}"</p>
-        <div class="testimonial-author">
-          <img src="${t.image || ('https://ui-avatars.com/api/?background=0D1B2A&color=FFC107&name='+encodeURIComponent(t.name))}" alt="${t.name}">
-          <div><h5>${t.name}</h5><span>${t.role||''}</span></div>
-        </div>
-      </div>
-    `).join('');
-  }catch(err){ console.error(err); }
+    container.innerHTML = items
+      .map(function (t) {
+        const rating = Math.max(0, Math.min(5, parseInt(t.rating, 10) || 0));
+        const avatar = t.image
+          ? esc(t.image)
+          : 'https://ui-avatars.com/api/?background=0D1B2A&color=FFC107&name=' + encodeURIComponent(t.name || '');
+        return (
+          '<div class="testimonial-card">' +
+            '<div class="stars">' + '★'.repeat(rating) + '☆'.repeat(5 - rating) + '</div>' +
+            '<p>"' + esc(t.text) + '"</p>' +
+            '<div class="testimonial-author">' +
+              '<img src="' + avatar + '" alt="' + esc(t.name) + '" loading="lazy" onerror="this.src=\'' + PLACEHOLDER_IMAGE + '\'">' +
+              '<div><h5>' + esc(t.name) + '</h5><span>' + esc(t.role || '') + '</span></div>' +
+            '</div>' +
+          '</div>'
+        );
+      })
+      .join('');
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = '<p class="empty-line">تعذر تحميل آراء العملاء</p>';
+  }
 }
 
 // ==========================================
-// عرض معرض الأعمال
+// معرض الأعمال
 // ==========================================
-async function renderGallery(containerId){
+async function renderGallery(containerId) {
   const container = document.getElementById(containerId);
-  if(!container) return;
-  try{
+  if (!container) return;
+  try {
     const items = await getGallery();
-    if(items.length === 0){
-      container.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1;">سيتم إضافة صور الأعمال قريباً</p>';
+    if (!items.length) {
+      container.innerHTML = '<p class="empty-line">سيتم إضافة صور الأعمال قريباً</p>';
       return;
     }
-    container.innerHTML = items.map(g => `
-      <div class="gallery-item">
-        <img src="${g.image}" alt="${g.title}">
-        <div class="gallery-overlay"><h4>${g.title}</h4></div>
-      </div>
-    `).join('');
-  }catch(err){ console.error(err); }
+    container.innerHTML = items
+      .map(function (g) {
+        return (
+          '<div class="gallery-item">' +
+            '<img src="' + esc(g.image || PLACEHOLDER_IMAGE) + '" alt="' + esc(g.title || 'عمل من تنفيذ الممتاز') + '" loading="lazy" onerror="this.src=\'' + PLACEHOLDER_IMAGE + '\'">' +
+            '<div class="gallery-overlay"><h4>' + esc(g.title) + '</h4></div>' +
+          '</div>'
+        );
+      })
+      .join('');
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = '<p class="empty-line">تعذر تحميل المعرض</p>';
+  }
 }
 
 // ==========================================
 // المقالات
 // ==========================================
-async function renderArticles(containerId, limit){
+function articleCard(article) {
+  const img = esc(article.image || PLACEHOLDER_IMAGE);
+  const url = 'article.html?id=' + encodeURIComponent(article.id);
+  return (
+    '<article class="article-card">' +
+      '<a href="' + url + '" class="article-img">' +
+        '<img src="' + img + '" alt="' + esc(article.title) + '" loading="lazy" onerror="this.src=\'' + PLACEHOLDER_IMAGE + '\'">' +
+      '</a>' +
+      '<div class="article-body">' +
+        '<div class="article-meta">' +
+          '<span><i class="fas fa-folder"></i> ' + esc(article.category || 'مقالات') + '</span>' +
+          '<span><i class="fas fa-calendar"></i> ' + esc(formatDate(article.date || article.createdAt)) + '</span>' +
+        '</div>' +
+        '<h3><a href="' + url + '" class="article-title-link">' + esc(article.title) + '</a></h3>' +
+        '<p>' + esc(article.excerpt || '') + '</p>' +
+        '<a href="' + url + '" class="read-more">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>' +
+      '</div>' +
+    '</article>'
+  );
+}
+
+async function renderArticles(containerId, limit) {
   const container = document.getElementById(containerId);
-  if(!container) return;
-  container.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:var(--gray);padding:40px;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المقالات...</p>';
-  try{
-    const articles = (await getPublishedArticles()).slice(0, limit);
-    if(articles.length === 0){
-      container.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1;">لا توجد مقالات حالياً</p>';
+  if (!container) return;
+  container.innerHTML = '<p class="loading-line"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المقالات...</p>';
+  try {
+    const articles = await getPublishedArticles();
+    const list = limit ? articles.slice(0, limit) : articles;
+    if (!list.length) {
+      container.innerHTML = '<p class="empty-line">لا توجد مقالات منشورة حالياً</p>';
       return;
     }
-    container.innerHTML = articles.map(article => `
-      <div class="article-card">
-        <a href="article.html?id=${article.id}">
-          <div class="article-img"><img src="${article.image}" alt="${article.title}"></div>
-        </a>
-        <div class="article-body">
-          <div class="article-meta">
-            <span><i class="fas fa-folder"></i> ${article.category}</span>
-            <span><i class="fas fa-calendar"></i> ${formatDate(article.date)}</span>
-          </div>
-          <h3><a href="article.html?id=${article.id}" style="color:inherit;">${article.title}</a></h3>
-          <p>${article.excerpt}</p>
-          <a href="article.html?id=${article.id}" class="read-more">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
-        </div>
-      </div>
-    `).join('');
-  }catch(err){
+    container.innerHTML = list.map(articleCard).join('');
+  } catch (err) {
     console.error(err);
-    container.innerHTML = '<p style="text-align:center;color:red;grid-column:1/-1;">حدث خطأ في تحميل المقالات</p>';
+    container.innerHTML = '<p class="empty-line">حدث خطأ في تحميل المقالات</p>';
   }
 }
 
-async function loadSingleArticle(){
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
+async function loadSingleArticle() {
   const container = document.getElementById('articleContent');
-  container.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</p>';
-  const article = await getArticleById(id);
-  if(!article){
-    container.innerHTML = '<h2>المقال غير موجود</h2><a href="articles.html" class="btn btn-primary">العودة للمقالات</a>';
+  if (!container) return;
+
+  const id = new URLSearchParams(window.location.search).get('id');
+  if (!id) {
+    renderArticleError(container);
     return;
   }
-  document.title = article.title + ' | شركة الممتاز';
-  const descTag = document.getElementById('pageDesc');
-  if(descTag) descTag.setAttribute('content', article.excerpt);
-  const titleTag = document.getElementById('pageTitle');
-  if(titleTag) titleTag.textContent = article.title + ' | شركة الممتاز';
 
-  container.innerHTML = `
-    <div class="article-header-meta">
-      <span><i class="fas fa-folder"></i> ${article.category}</span>
-      <span><i class="fas fa-user"></i> ${article.author}</span>
-      <span><i class="fas fa-calendar"></i> ${formatDate(article.date)}</span>
-    </div>
-    <h1 style="color:var(--primary);font-size:32px;margin-bottom:20px;">${article.title}</h1>
-    <img src="${article.image}" alt="${article.title}" style="width:100%;border-radius:12px;margin-bottom:25px;">
-    <div class="article-body-content">${article.content}</div>
-    <div class="share-box">
-      <span style="font-weight:700;color:var(--primary);">شارك المقال:</span>
-      <a href="https://wa.me/?text=${encodeURIComponent(article.title)}" target="_blank"><i class="fab fa-whatsapp"></i></a>
-      <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}" target="_blank"><i class="fab fa-twitter"></i></a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=${window.location.href}" target="_blank"><i class="fab fa-facebook"></i></a>
-    </div>
-  `;
-  renderArticles('relatedArticles', 3);
+  container.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</p>';
+
+  let article = null;
+  try {
+    article = await getArticleById(id);
+  } catch (err) {
+    console.error(err);
+  }
+
+  if (!article) {
+    renderArticleError(container);
+    return;
+  }
+
+  const pageTitle = article.title + ' | شركة الممتاز للأعمال الكهربائية';
+  document.title = pageTitle;
+  const titleTag = document.getElementById('pageTitle');
+  if (titleTag) titleTag.textContent = pageTitle;
+  const descTag = document.getElementById('pageDesc');
+  if (descTag) descTag.setAttribute('content', article.excerpt || '');
+
+  const shareUrl = encodeURIComponent(window.location.href);
+  const shareText = encodeURIComponent(article.title || '');
+
+  container.innerHTML =
+    '<div class="article-header-meta">' +
+      '<span><i class="fas fa-folder"></i> ' + esc(article.category || 'مقالات') + '</span>' +
+      '<span><i class="fas fa-user"></i> ' + esc(article.author || 'فريق الممتاز') + '</span>' +
+      '<span><i class="fas fa-calendar"></i> ' + esc(formatDate(article.date || article.createdAt)) + '</span>' +
+    '</div>' +
+    '<h1 class="article-main-title">' + esc(article.title) + '</h1>' +
+    '<img class="article-main-img" src="' + esc(article.image || PLACEHOLDER_IMAGE) + '" alt="' + esc(article.title) + '" onerror="this.src=\'' + PLACEHOLDER_IMAGE + '\'">' +
+    '<div class="article-body-content">' + sanitizeHtml(article.content) + '</div>' +
+    '<div class="share-box">' +
+      '<span class="share-label">شارك المقال:</span>' +
+      '<a href="https://wa.me/?text=' + shareText + '%20' + shareUrl + '" target="_blank" rel="noopener" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>' +
+      '<a href="https://twitter.com/intent/tweet?text=' + shareText + '&url=' + shareUrl + '" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>' +
+      '<a href="https://www.facebook.com/sharer/sharer.php?u=' + shareUrl + '" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook"></i></a>' +
+    '</div>';
+
+  renderRelatedArticles(article.id);
 }
 
-function formatDate(dateStr){
-  const date = new Date(dateStr);
+function renderArticleError(container) {
+  container.innerHTML =
+    '<div class="empty-state">' +
+      '<i class="fas fa-file-circle-question"></i>' +
+      '<h2>المقال غير موجود</h2>' +
+      '<p>ربما تم حذف المقال أو أن الرابط غير صحيح.</p>' +
+      '<a href="articles.html" class="btn btn-primary">العودة إلى المقالات</a>' +
+    '</div>';
+}
+
+async function renderRelatedArticles(currentId) {
+  const container = document.getElementById('relatedArticles');
+  if (!container) return;
+  try {
+    const articles = (await getPublishedArticles()).filter(function (a) { return a.id !== currentId; });
+    if (!articles.length) {
+      container.closest('section').style.display = 'none';
+      return;
+    }
+    container.innerHTML = articles.slice(0, 3).map(articleCard).join('');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// ==========================================
+// أدوات مساعدة
+// ==========================================
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  let date = dateStr instanceof Date ? dateStr : new Date(dateStr);
+  if (isNaN(date.getTime()) && typeof dateStr === 'number') date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '';
   const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
 }

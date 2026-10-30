@@ -1,101 +1,159 @@
 // ============================
-// منطق صفحة الخدمة الواحدة (service.html)
+// service-page.js — صفحة الخدمة الواحدة (service.html?slug=...)
 // ============================
 
-async function initServicePage() {
-  const params = new URLSearchParams(window.location.search);
-  const slug = params.get("slug");
+const SERVICE_PLACEHOLDER = 'assets/placeholder.svg';
 
-  if (!slug) {
-    document.getElementById("serviceTitle").textContent = "الخدمة غير موجودة";
-    return;
-  }
-
-  const service = await getServiceBySlug(slug);
-
-  if (!service) {
-    document.getElementById("serviceTitle").textContent = "الخدمة غير موجودة";
-    document.getElementById("serviceShortDesc").textContent = "عذراً، لم نعثر على هذه الخدمة";
-    return;
-  }
-
-  // ===== تحديث عناصر السيو =====
-  const pageTitle = service.metaTitle || service.title;
-  document.title = pageTitle + " | شركة الممتاز للأعمال الكهربائية";
-  document.getElementById("pageTitle").textContent = document.title;
-  document.getElementById("metaDesc").setAttribute("content", service.metaDescription || service.shortDesc);
-  document.getElementById("ogTitle").setAttribute("content", pageTitle);
-  document.getElementById("ogDesc").setAttribute("content", service.metaDescription || service.shortDesc);
-  document.getElementById("ogImage").setAttribute("content", service.image || "");
-  document.getElementById("canonicalLink").setAttribute("href", window.location.href);
-  document.getElementById("breadcrumbCurrent").textContent = service.title;
-
-  // ===== Schema.org JSON-LD =====
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": service.title,
-    "description": service.shortDesc,
-    "provider": {
-      "@type": "ElectricalContractor",
-      "name": "شركة الممتاز للأعمال الكهربائية",
-      "areaServed": "جازان، المملكة العربية السعودية",
-      "telephone": "+966508980434"
-    },
-    "image": service.image || ""
-  };
-  document.getElementById("schemaService").textContent = JSON.stringify(schema);
-
-  // ===== تعبئة المحتوى =====
-  document.getElementById("serviceTitle").textContent = service.title;
-  document.getElementById("serviceShortDesc").textContent = service.shortDesc;
-  document.getElementById("serviceIcon").className = service.icon || "fas fa-bolt";
-  document.getElementById("serviceMainImage").src = optimizedImageUrl(service.image, 700) || "assets/logo.svg";
-  document.getElementById("serviceMainImage").alt = service.title;
-  document.getElementById("serviceFullDescription").innerHTML = service.fullDescription || `<p>${service.shortDesc}</p>`;
-
-  // المميزات
-  const featuresList = document.getElementById("serviceFeaturesList");
-  if (service.features && service.features.length > 0) {
-    featuresList.innerHTML = service.features
-      .map((f) => `<li><i class="fas fa-check"></i> ${f}</li>`)
-      .join("");
-  } else {
-    featuresList.innerHTML = `<li><i class="fas fa-check"></i> جودة تنفيذ عالية</li>`;
-  }
-
-  // معرض الصور الخاص بالخدمة
-  if (service.gallery && service.gallery.length > 0) {
-    const galleryGrid = document.getElementById("serviceGalleryGrid");
-    galleryGrid.innerHTML = service.gallery
-      .map(
-        (img) => `
-      <div class="gallery-item">
-        <img src="${optimizedImageUrl(img, 500)}" alt="${service.title}" loading="lazy">
-      </div>`
-      )
-      .join("");
-    document.getElementById("serviceGallerySection").style.display = "block";
-  }
-
-  // الخدمات ذات الصلة (استثناء الخدمة الحالية)
-  const allServices = await getServices();
-  const related = allServices.filter((s) => s.id !== service.id).slice(0, 3);
-  const relatedGrid = document.getElementById("relatedServicesGrid");
-  relatedGrid.innerHTML = related
-    .map(
-      (s) => `
-    <a href="service.html?slug=${s.slug}" class="service-card">
-      <div class="service-card-icon"><i class="${s.icon}"></i></div>
-      <h3>${s.title}</h3>
-      <p>${s.shortDesc}</p>
-      <span class="service-card-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></span>
-    </a>`
-    )
-    .join("");
+function setTextIf(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value == null ? '' : value;
+}
+function setAttrIf(id, attr, value) {
+  const el = document.getElementById(id);
+  if (el && value) el.setAttribute(attr, value);
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initServicePage() {
+  const slug = new URLSearchParams(window.location.search).get('slug');
+  const titleEl = document.getElementById('serviceTitle');
+  if (!titleEl) return;
+
+  if (!slug) {
+    renderServiceError('لم يتم تحديد الخدمة');
+    return;
+  }
+
+  let service = null;
+  try {
+    service = await getServiceBySlugWithFallback(slug);
+  } catch (err) {
+    console.error(err);
+  }
+
+  if (!service) {
+    renderServiceError('عذراً، لم نعثر على هذه الخدمة');
+    return;
+  }
+
+  const pageTitle = service.metaTitle || service.title;
+  const metaDescription = service.metaDescription || service.shortDesc || '';
+
+  // ===== تحديث عناصر السيو =====
+  document.title = pageTitle + ' | شركة الممتاز للأعمال الكهربائية';
+  setTextIf('pageTitle', document.title);
+  setAttrIf('metaDesc', 'content', metaDescription);
+  setAttrIf('ogTitle', 'content', pageTitle);
+  setAttrIf('ogDesc', 'content', metaDescription);
+  setAttrIf('ogImage', 'content', service.image || SERVICE_PLACEHOLDER);
+  setAttrIf('canonicalLink', 'href', window.location.href.split('?')[0] + '?slug=' + encodeURIComponent(slug));
+  setTextIf('breadcrumbCurrent', service.title);
+
+  // ===== Schema.org JSON-LD =====
+  const schemaTag = document.getElementById('schemaService');
+  if (schemaTag) {
+    schemaTag.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: service.title,
+      description: metaDescription,
+      provider: {
+        '@type': 'ElectricalContractor',
+        name: 'شركة الممتاز للأعمال الكهربائية',
+        areaServed: 'جازان، المملكة العربية السعودية',
+        telephone: '+966508980434'
+      },
+      image: service.image || SERVICE_PLACEHOLDER
+    });
+  }
+
+  // ===== تعبئة المحتوى =====
+  titleEl.textContent = service.title;
+  setTextIf('serviceShortDesc', service.shortDesc || '');
+
+  const iconEl = document.getElementById('serviceIcon');
+  if (iconEl) iconEl.className = service.icon || 'fas fa-bolt';
+
+  const mainImage = document.getElementById('serviceMainImage');
+  if (mainImage) {
+    mainImage.src = optimizedImageUrl(service.image, 800) || SERVICE_PLACEHOLDER;
+    mainImage.alt = service.title;
+    mainImage.onerror = function () { this.onerror = null; this.src = SERVICE_PLACEHOLDER; };
+  }
+
+  const fullDesc = document.getElementById('serviceFullDescription');
+  if (fullDesc) {
+    fullDesc.innerHTML = service.fullDescription
+      ? sanitizeHtml(service.fullDescription)
+      : '<p>' + esc(service.shortDesc || '') + '</p>';
+  }
+
+  // ===== المميزات =====
+  const featuresList = document.getElementById('serviceFeaturesList');
+  if (featuresList) {
+    const features = (service.features && service.features.length)
+      ? service.features
+      : ['جودة تنفيذ عالية', 'فنيون متخصصون', 'أسعار واضحة قبل التنفيذ'];
+    featuresList.innerHTML = features
+      .map(function (f) { return '<li><i class="fas fa-check"></i> ' + esc(f) + '</li>'; })
+      .join('');
+  }
+
+  // ===== معرض صور الخدمة =====
+  const gallerySection = document.getElementById('serviceGallerySection');
+  const galleryGrid = document.getElementById('serviceGalleryGrid');
+  if (gallerySection && galleryGrid && service.gallery && service.gallery.length) {
+    galleryGrid.innerHTML = service.gallery
+      .map(function (img) {
+        return '<div class="gallery-item"><img src="' + esc(optimizedImageUrl(img, 500)) +
+          '" alt="' + esc(service.title) + '" loading="lazy"></div>';
+      })
+      .join('');
+    gallerySection.style.display = 'block';
+  }
+
+  // ===== زر الحجز مع تعبئة الخدمة تلقائياً =====
+  const bookingBtn = document.getElementById('serviceBookingBtn');
+  if (bookingBtn) {
+    bookingBtn.href = 'booking.html?service=' + encodeURIComponent(service.slug || service.id || '');
+  }
+
+  // ===== الخدمات ذات الصلة =====
+  const relatedGrid = document.getElementById('relatedServicesGrid');
+  if (relatedGrid) {
+    const all = await getServicesWithFallback();
+    const related = all.filter(function (s) { return s.id !== service.id && s.slug !== service.slug; }).slice(0, 3);
+    relatedGrid.innerHTML = related
+      .map(function (s) {
+        return (
+          '<a href="service.html?slug=' + encodeURIComponent(s.slug || s.id) + '" class="service-card">' +
+            '<div class="service-icon"><i class="' + esc(s.icon || 'fas fa-bolt') + '"></i></div>' +
+            '<h3>' + esc(s.title) + '</h3>' +
+            '<p>' + esc(s.shortDesc || s.description || '') + '</p>' +
+            '<span class="service-card-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></span>' +
+          '</a>'
+        );
+      })
+      .join('');
+  }
+}
+
+function renderServiceError(message) {
+  const main = document.getElementById('serviceDetail');
+  if (main) {
+    main.innerHTML =
+      '<div class="empty-state">' +
+        '<i class="fas fa-circle-exclamation"></i>' +
+        '<h2>' + esc(message) + '</h2>' +
+        '<p>يمكنك تصفح جميع خدماتنا المتاحة والاختيار منها.</p>' +
+        '<a href="services.html" class="btn btn-primary">كل الخدمات</a>' +
+      '</div>';
+    return;
+  }
+  const titleEl = document.getElementById('serviceTitle');
+  if (titleEl) titleEl.textContent = message;
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
   await applySiteSettings();
   await initServicePage();
 });

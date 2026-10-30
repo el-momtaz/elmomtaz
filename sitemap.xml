@@ -1,9 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  خريطة الموقع.
+  لضبط النطاق في كل الملفات مرة واحدة شغّل:
+      python3 set-domain.py https://your-domain.com
+  ويُفضّل إضافة رابط كل خدمة جديدة بالشكل:
+      <url><loc>https://your-domain.com/service.html?slug=اسم-الخدمة</loc></url>
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- بعد النشر: استبدل YOUR-DOMAIN بالنطاق الفعلي للموقع -->
-  <url><loc>https://YOUR-DOMAIN/</loc><priority>1.0</priority></url>
-  <url><loc>https://YOUR-DOMAIN/about.html</loc><priority>0.8</priority></url>
-  <url><loc>https://YOUR-DOMAIN/services.html</loc><priority>0.9</priority></url>
-  <url><loc>https://YOUR-DOMAIN/articles.html</loc><priority>0.8</priority></url>
-  <url><loc>https://YOUR-DOMAIN/contact.html</loc><priority>0.9</priority></url>
+  <url>
+    <loc>https://YOUR-DOMAIN/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://YOUR-DOMAIN/services.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://YOUR-DOMAIN/booking.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://YOUR-DOMAIN/about.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://YOUR-DOMAIN/articles.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://YOUR-DOMAIN/contact.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

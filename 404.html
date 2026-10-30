@@ -2,12 +2,26 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الصفحة غير موجودة | الممتاز</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;flex-direction:column;background:var(--primary);color:white;">
-  <h1 style="font-size:80px;color:var(--accent);">404</h1>
+<body>
+<div class="error-page">
+  <img src="assets/logo.svg" alt="الممتاز" style="height:60px;margin-bottom:30px;">
+  <h1>404</h1>
   <h2>عذراً، الصفحة غير موجودة</h2>
-  <a href="index.html" class="btn btn-primary" style="margin-top:20px;">العودة للرئيسية</a>
+  <p>الرابط الذي تحاول الوصول إليه غير صحيح أو تم نقل الصفحة.</p>
+  <div class="error-actions">
+    <a href="index.html" class="btn btn-primary">العودة للرئيسية</a>
+    <a href="services.html" class="btn btn-outline">تصفح خدماتنا</a>
+    <a href="tel:+966508980434" class="btn btn-dark"><i class="fas fa-phone"></i> اتصل بنا</a>
+  </div>
+</div>
+<script src="js/icon-fallback.js"></script>
 </body>
 </html>

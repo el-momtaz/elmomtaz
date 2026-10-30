@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>اتصل بنا | شركة الممتاز للأعمال الكهربائية - جازان</title>
 <meta name="description" content="تواصل مع شركة الممتاز للأعمال الكهربائية في جازان عبر الهاتف أو واتساب: 966508980434+">
+<link rel="canonical" href="contact.html">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D1B2A">
 <link rel="stylesheet" href="css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,16 +17,17 @@
 
 <header>
   <div class="container navbar">
-    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="الممتاز"></a>
+    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="شعار شركة الممتاز للأعمال الكهربائية"></a>
     <nav class="nav-links" id="navLinks">
       <a href="index.html">الرئيسية</a>
       <a href="about.html">من نحن</a>
       <a href="services.html">خدماتنا</a>
+      <a href="booking.html">حجز موعد</a>
       <a href="articles.html">المقالات</a>
       <a href="contact.html" class="active">اتصل بنا</a>
     </nav>
-    <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> 0508980434</a>
-    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> <span data-dynamic="phone-text">0508980434</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="القائمة"><i class="fas fa-bars"></i></button>
   </div>
 </header>
 
@@ -40,50 +44,54 @@
       <h3 style="margin-bottom:30px;font-size:24px;">معلومات التواصل</h3>
       <div class="contact-item">
         <div class="icon"><i class="fas fa-phone"></i></div>
-        <div><h4>اتصل بنا</h4><a href="tel:+966508980434" data-dynamic="phone-link">966 50 898 0434+</a></div>
+        <div><h4>اتصل بنا</h4><a href="tel:+966508980434" data-dynamic="phone-link" data-dynamic-phone><span data-dynamic="phone-text">966 50 898 0434+</span></a></div>
       </div>
       <div class="contact-item">
         <div class="icon"><i class="fab fa-whatsapp"></i></div>
-        <div><h4>واتساب</h4><a href="https://wa.me/966508980434" data-dynamic="whatsapp-link">966 50 898 0434+</a></div>
+        <div><h4>واتساب</h4><a href="https://wa.me/966508980434" data-dynamic="whatsapp-link">مراسلة فورية</a></div>
       </div>
       <div class="contact-item">
         <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
-        <div><h4>موقعنا</h4><p>جازان، المملكة العربية السعودية</p></div>
+        <div><h4>موقعنا</h4><p data-dynamic="address-text">جازان، المملكة العربية السعودية</p></div>
       </div>
       <div class="contact-item">
         <div class="icon"><i class="fas fa-clock"></i></div>
-        <div><h4>ساعات العمل</h4><p>يومياً من 8 صباحاً حتى 10 مساءً</p></div>
+        <div><h4>ساعات العمل</h4><p data-dynamic="workhours-text">يومياً من 8 صباحاً حتى 10 مساءً</p></div>
       </div>
       <div class="contact-item">
         <div class="icon"><i class="fas fa-envelope"></i></div>
-        <div><h4>البريد الإلكتروني</h4><p>info@alemtiaz-electric.com</p></div>
+        <div><h4>البريد الإلكتروني</h4><a href="mailto:info@alemtiaz-electric.com" data-dynamic="email-link"><span data-dynamic="email-text">info@alemtiaz-electric.com</span></a></div>
       </div>
     </div>
 
     <div class="contact-form">
       <h3 style="margin-bottom:25px;color:var(--primary);font-size:22px;">أرسل لنا رسالة</h3>
-      <form id="contactForm" onsubmit="return sendWhats(event)">
+      <p class="form-hint">املأ البيانات وسيتم تحويلك إلى واتساب برسالة جاهزة — ويمكننا أيضاً الاحتفاظ بطلبك في لوحة التحكم.</p>
+      <form id="contactForm" novalidate>
         <div class="form-group">
-          <label>الاسم الكامل</label>
-          <input type="text" id="cname" required placeholder="أدخل اسمك">
+          <label for="cname">الاسم الكامل</label>
+          <input type="text" id="cname" required maxlength="100" placeholder="أدخل اسمك">
         </div>
         <div class="form-group">
-          <label>رقم الجوال</label>
-          <input type="tel" id="cphone" required placeholder="05xxxxxxxx">
+          <label for="cphone">رقم الجوال</label>
+          <input type="tel" id="cphone" required maxlength="30" placeholder="05xxxxxxxx" pattern="[0-9+\s-]{9,15}">
         </div>
         <div class="form-group">
-          <label>نوع الخدمة</label>
+          <label for="cservice">نوع الخدمة</label>
           <select id="cservice">
             <option>تأسيس كهرباء</option>
             <option>تشطيب كهرباء</option>
             <option>صيانة وإصلاح</option>
+            <option>لوحات التوزيع</option>
+            <option>إضاءة LED</option>
             <option>أخرى</option>
           </select>
         </div>
         <div class="form-group">
-          <label>تفاصيل الطلب</label>
-          <textarea rows="5" id="cmsg" placeholder="اكتب تفاصيل طلبك هنا..."></textarea>
+          <label for="cmsg">تفاصيل الطلب</label>
+          <textarea rows="5" id="cmsg" maxlength="2000" placeholder="اكتب تفاصيل طلبك هنا..."></textarea>
         </div>
+        <div class="form-message" id="formMessage" role="status"></div>
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
           <i class="fab fa-whatsapp"></i> إرسال الطلب عبر واتساب
         </button>
@@ -92,38 +100,80 @@
   </div>
 
   <div class="container map-wrap">
-    <iframe src="https://maps.google.com/maps?q=جازان&t=&z=11&ie=UTF8&iwloc=&output=embed" width="100%" height="400" style="border:0;" allowfullscreen loading="lazy"></iframe>
+    <iframe id="mapFrame" src="https://maps.google.com/maps?q=Jazan&t=&z=11&ie=UTF8&iwloc=&output=embed" width="100%" height="400" style="border:0;" allowfullscreen loading="lazy" title="موقع الشركة على الخريطة"></iframe>
   </div>
 </section>
 
 <footer>
   <div class="container footer-bottom">
-    <p>© 2024 شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
+    <p>© <span id="footerYear">2026</span> شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
   </div>
 </footer>
 
-<a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="whatsapp-float" target="_blank" rel="noopener" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="js/offline-store.js"></script>
 <script src="assets/firebase-config.js"></script>
 <script src="js/site-data.js"></script>
+<script src="js/image-upload.js"></script>
 <script src="js/main.js"></script>
 <script>
-applySiteSettings();
-async function sendWhats(e){
-  e.preventDefault();
-  const name=document.getElementById('cname').value.trim();
-  const phone=document.getElementById('cphone').value.trim();
-  const service=document.getElementById('cservice').value;
-  const msg=document.getElementById('cmsg').value.trim();
-  try { await sendMessage({name, phone, service, message:msg, date:new Date().toISOString()}); }
-  catch(err) { console.error('تعذر حفظ الرسالة:', err); }
-  const settings=await getSettings();
-  const text=`مرحباً، أنا ${name}\nرقم الجوال: ${phone}\nنوع الخدمة: ${service}\nالتفاصيل: ${msg}`;
-  window.open(`https://wa.me/${settings.whatsapp.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(text)}`,'_blank','noopener');
-  return false;
-}
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+  applySiteSettings();
+
+  const contactForm = document.getElementById('contactForm');
+  const formMessage = document.getElementById('formMessage');
+
+  contactForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('cname').value.trim();
+    const phone = document.getElementById('cphone').value.trim();
+    const service = document.getElementById('cservice').value;
+    const message = document.getElementById('cmsg').value.trim();
+
+    formMessage.className = 'form-message';
+    formMessage.textContent = '';
+
+    if (name.length < 3) {
+      formMessage.className = 'form-message error';
+      formMessage.textContent = 'الرجاء إدخال الاسم الكامل.';
+      return;
+    }
+    if (phone.replace(/[^0-9]/g, '').length < 9) {
+      formMessage.className = 'form-message error';
+      formMessage.textContent = 'الرجاء إدخال رقم جوال صحيح.';
+      return;
+    }
+
+    // 1) محاولة حفظ الطلب في لوحة التحكم (قد تفشل إن لم تكن قواعد Firestore منشورة)
+    let saved = false;
+    try {
+      await sendMessage({ name, phone, service, message, date: new Date().toISOString().slice(0, 10) });
+      saved = true;
+    } catch (err) {
+      console.warn('تعذر حفظ الرسالة في قاعدة البيانات:', firebaseErrorMessage(err));
+    }
+
+    // 2) فتح واتساب برسالة جاهزة
+    let settings;
+    try { settings = await getSettings(); } catch (err) { settings = { whatsapp: '+966508980434' }; }
+    const number = String(settings.whatsapp || '+966508980434').replace(/[^0-9]/g, '');
+    const text = 'مرحباً، أنا ' + name + '\nرقم الجوال: ' + phone + '\nنوع الخدمة: ' + service + '\nالتفاصيل: ' + (message || '-');
+
+    formMessage.className = 'form-message success';
+    formMessage.textContent = 'تم تجهيز طلبك. إذا لم تُفتح نافذة واتساب اضغط على زر واتساب في الأسفل.';
+    window.open('https://wa.me/' + number + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+
+    contactForm.reset();
+    if (!saved) {
+      console.info('لم يتم حفظ الطلب في قاعدة البيانات، لكنه أُرسل إلى واتساب.');
+    }
+  });
 </script>
+<script src="js/icon-fallback.js"></script>
 </body>
 </html>

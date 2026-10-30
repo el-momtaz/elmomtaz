@@ -1,150 +1,153 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title id="pageTitle">تفاصيل الخدمة | شركة الممتاز للأعمال الكهربائية</title>
-  <meta id="metaDesc" name="description" content="خدمات كهربائية احترافية في جازان" />
-  <meta id="ogTitle" property="og:title" content="شركة الممتاز" />
-  <meta id="ogDesc" property="og:description" content="" />
-  <meta id="ogImage" property="og:image" content="" />
-  <meta property="og:type" content="website" />
-  <link rel="canonical" id="canonicalLink" href="" />
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="css/style.css" />
-
-  <script type="application/ld+json" id="schemaService"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">خدمة | شركة الممتاز للأعمال الكهربائية</title>
+<meta id="metaDesc" name="description" content="">
+<meta id="ogTitle" property="og:title" content="">
+<meta id="ogDesc" property="og:description" content="">
+<meta id="ogImage" property="og:image" content="assets/logo.svg">
+<link id="canonicalLink" rel="canonical" href="">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D1B2A">
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script type="application/ld+json" id="schemaService">{}</script>
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="main-header" id="mainHeader">
-    <nav class="navbar container">
-      <a href="index.html" class="logo">
-        <img src="assets/logo.svg" alt="شعار شركة الممتاز" />
-        <span>الممتاز</span>
-      </a>
-      <ul class="nav-links" id="navLinks">
-        <li><a href="index.html">الرئيسية</a></li>
-        <li><a href="services.html">خدماتنا</a></li>
-        <li><a href="about.html">من نحن</a></li>
-        <li><a href="articles.html">المقالات</a></li>
-        <li><a href="contact.html">تواصل معنا</a></li>
-      </ul>
-      <a href="#" class="nav-phone" data-dynamic="whatsappLink">
-        <i class="fab fa-whatsapp"></i> <span data-dynamic="phone">اتصل بنا</span>
-      </a>
-      <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+<header>
+  <div class="container navbar">
+    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="شعار شركة الممتاز للأعمال الكهربائية"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">الرئيسية</a>
+      <a href="about.html">من نحن</a>
+      <a href="services.html" class="active">خدماتنا</a>
+      <a href="booking.html">حجز موعد</a>
+      <a href="articles.html">المقالات</a>
+      <a href="contact.html">اتصل بنا</a>
     </nav>
-  </header>
+    <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> <span data-dynamic="phone-text">0508980434</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="القائمة"><i class="fas fa-bars"></i></button>
+  </div>
+</header>
 
-  <!-- Breadcrumb -->
-  <section class="service-breadcrumb">
-    <div class="container">
-      <nav class="breadcrumb-nav">
-        <a href="index.html">الرئيسية</a>
-        <i class="fas fa-chevron-left"></i>
-        <a href="services.html">الخدمات</a>
-        <i class="fas fa-chevron-left"></i>
-        <span id="breadcrumbCurrent">...</span>
-      </nav>
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">الرئيسية</a> /
+      <a href="services.html">خدماتنا</a> /
+      <span id="breadcrumbCurrent">الخدمة</span>
     </div>
-  </section>
+  </div>
+</div>
 
-  <!-- Service Hero -->
-  <section class="service-hero" id="serviceHero">
-    <div class="container service-hero-grid">
-      <div class="service-hero-text">
-        <div class="service-icon-badge"><i id="serviceIcon" class="fas fa-bolt"></i></div>
-        <h1 id="serviceTitle">جاري التحميل...</h1>
-        <p id="serviceShortDesc"></p>
-        <div class="service-hero-actions">
-          <a href="#" class="btn btn-primary" data-dynamic="whatsappLink">
-            <i class="fab fa-whatsapp"></i> اطلب الخدمة الآن
-          </a>
-          <a href="tel:" class="btn btn-outline" data-dynamic="phoneLink">
-            <i class="fas fa-phone"></i> اتصل بنا
-          </a>
-        </div>
+<section class="section" id="serviceDetail">
+  <div class="container service-detail">
+
+    <div class="service-detail-media">
+      <img id="serviceMainImage" src="assets/placeholder.svg" alt="صورة الخدمة">
+    </div>
+
+    <div class="service-detail-info">
+      <span class="service-detail-icon"><i id="serviceIcon" class="fas fa-bolt"></i></span>
+      <h1 id="serviceTitle">جاري التحميل...</h1>
+      <p id="serviceShortDesc" class="service-detail-lead"></p>
+
+      <ul class="service-features" id="serviceFeaturesList"></ul>
+
+      <div class="service-detail-actions">
+        <a href="tel:+966508980434" data-dynamic="phone-link" class="btn btn-primary"><i class="fas fa-phone"></i> اتصل الآن</a>
+        <a href="booking.html" id="serviceBookingBtn" class="btn btn-accent"><i class="fas fa-calendar-check"></i> احجز موعد</a>
+        <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" target="_blank" rel="noopener" class="btn btn-dark"><i class="fab fa-whatsapp"></i> اطلب عرض سعر</a>
       </div>
-      <div class="service-hero-image">
-        <img id="serviceMainImage" src="" alt="" />
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="service-description-card">
+      <h2>تفاصيل الخدمة</h2>
+      <div class="article-body-content" id="serviceFullDescription">
+        <p><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</p>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Full description + Features -->
-  <section class="section service-content-section">
-    <div class="container service-content-grid">
-      <div class="service-full-description" id="serviceFullDescription">
-        <!-- محتوى المحرر الغني -->
+  <div class="container" id="serviceGallerySection" style="display:none;">
+    <div class="section-title" style="margin-top:50px;">
+      <span>من أعمالنا</span>
+      <h2>صور من تنفيذ هذه الخدمة</h2>
+    </div>
+    <div class="gallery-grid" id="serviceGalleryGrid"></div>
+  </div>
+
+  <div class="container" style="margin-top:60px;">
+    <div class="section-title">
+      <span>خدمات أخرى</span>
+      <h2>قد تحتاج أيضاً</h2>
+    </div>
+    <div class="services-grid" id="relatedServicesGrid"></div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <h2>جاهزون لتنفيذ مشروعك</h2>
+    <p>معاينة مجانية وعرض سعر واضح بدون التزام</p>
+    <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="btn btn-dark" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> تواصل عبر واتساب</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div class="footer-col">
+      <div class="footer-logo"><img src="assets/logo-light.svg" alt="الممتاز"></div>
+      <p>شركة الممتاز للأعمال الكهربائية، نقدم خدمات تأسيس وتشطيب كهرباء احترافية في جازان والمناطق المجاورة منذ أكثر من 10 سنوات.</p>
+      <div class="social-links">
+        <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
+        <a href="tel:+966508980434" data-dynamic="phone-link" aria-label="هاتف"><i class="fas fa-phone"></i></a>
+        <a href="#" data-dynamic="twitter-link" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+        <a href="#" data-dynamic="instagram-link" aria-label="إنستغرام"><i class="fab fa-instagram"></i></a>
       </div>
-
-      <aside class="service-sidebar">
-        <div class="service-features-card">
-          <h3><i class="fas fa-check-circle"></i> مميزات الخدمة</h3>
-          <ul id="serviceFeaturesList"></ul>
-        </div>
-
-        <div class="service-cta-card">
-          <h3>تحتاج هذه الخدمة؟</h3>
-          <p>تواصل معنا الآن واحصل على استشارة مجانية</p>
-          <a href="#" class="btn btn-primary btn-block" data-dynamic="whatsappLink">
-            <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
-          </a>
-        </div>
-      </aside>
     </div>
-  </section>
-
-  <!-- Gallery -->
-  <section class="section service-gallery-section" id="serviceGallerySection" style="display:none">
-    <div class="container">
-      <h2 class="section-title">صور من أعمالنا في هذه الخدمة</h2>
-      <div class="gallery-grid" id="serviceGalleryGrid"></div>
+    <div class="footer-col">
+      <h4>روابط سريعة</h4>
+      <ul>
+        <li><a href="about.html">من نحن</a></li>
+        <li><a href="services.html">خدماتنا</a></li>
+        <li><a href="articles.html">المقالات</a></li>
+        <li><a href="contact.html">اتصل بنا</a></li>
+      </ul>
     </div>
-  </section>
-
-  <!-- Related Services -->
-  <section class="section related-services-section">
-    <div class="container">
-      <h2 class="section-title">خدمات أخرى قد تهمك</h2>
-      <div class="services-grid" id="relatedServicesGrid"></div>
+    <div class="footer-col">
+      <h4>تواصل معنا</h4>
+      <p><i class="fas fa-map-marker-alt"></i> <span data-dynamic="address-text">جازان، المملكة العربية السعودية</span></p>
+      <p><i class="fas fa-phone"></i> <a href="tel:+966508980434" data-dynamic="phone-link"><span data-dynamic="phone-text">+966508980434</span></a></p>
+      <p><i class="fas fa-envelope"></i> <a href="mailto:info@alemtiaz-electric.com" data-dynamic="email-link"><span data-dynamic="email-text">info@alemtiaz-electric.com</span></a></p>
+      <p><i class="fas fa-clock"></i> <span data-dynamic="workhours-text">يومياً من 8 صباحاً حتى 10 مساءً</span></p>
     </div>
-  </section>
+  </div>
+  <div class="container footer-bottom">
+    <p>© <span id="footerYear">2026</span> شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
+  </div>
+</footer>
 
-  <!-- CTA -->
-  <section class="cta-section">
-    <div class="container">
-      <h2>هل تحتاج مساعدة في مشروعك الكهربائي؟</h2>
-      <p>فريقنا جاهز لخدمتك في جازان والمناطق المجاورة</p>
-      <a href="#" class="btn btn-light" data-dynamic="whatsappLink">
-        <i class="fab fa-whatsapp"></i> تواصل معنا الآن
-      </a>
-    </div>
-  </section>
+<a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="whatsapp-float" target="_blank" rel="noopener" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
 
-  <footer class="main-footer">
-    <div class="container">
-      <p>© 2024 شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
-    </div>
-  </footer>
-
-  <a href="#" class="whatsapp-float" data-dynamic="whatsappLink">
-    <i class="fab fa-whatsapp"></i>
-  </a>
-
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="assets/firebase-config.js"></script>
-  <script src="js/image-upload.js"></script>
-  <script src="js/site-data.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/service-page.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="js/offline-store.js"></script>
+<script src="assets/firebase-config.js"></script>
+<script src="js/site-data.js"></script>
+<script src="js/image-upload.js"></script>
+<script src="js/main.js"></script>
+<script src="js/service-page.js"></script>
+<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+<script src="js/icon-fallback.js"></script>
 </body>
 </html>

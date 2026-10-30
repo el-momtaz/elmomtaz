@@ -1,23 +1,149 @@
-let quill;
+// ============================================================
+// admin.js — لوحة تحكم الممتاز
+// ============================================================
 
-auth.onAuthStateChanged(function(user){
-  if(!user){ window.location.href = 'login.html'; }
-  else{ initAdminPanel(); }
+let quill = null;            // محرر المقالات
+let serviceQuill = null;     // محرر وصف الخدمة
+let currentServiceGallery = [];
+
+// ============================
+// أدوات عامة
+// ============================
+function showToast(message, type) {
+  let box = document.getElementById('adminToast');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'adminToast';
+    box.className = 'admin-toast';
+    document.body.appendChild(box);
+  }
+  box.textContent = message;
+  box.className = 'admin-toast show ' + (type || 'info');
+  clearTimeout(box._timer);
+  box._timer = setTimeout(function () { box.className = 'admin-toast'; }, 4000);
+}
+
+// تنسيق تاريخ عربي مختصر (نسخة مستقلة عن main.js لأن اللوحة لا تحمّله)
+function adminFormatDate(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return String(value);
+  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function $(id) { return document.getElementById(id); }
+function setValue(id, value) { const el = $(id); if (el) el.value = value == null ? '' : value; }
+function getValue(id) { const el = $(id); return el ? el.value : ''; }
+function getTrimmed(id) { return String(getValue(id)).trim(); }
+
+/**
+ * إنشاء محرر نصي: يستخدم Quill إن كان محمّلاً، وإلا يعود إلى textarea عادية
+ * (حتى لا تتعطل اللوحة عند فشل تحميل مكتبة المحرر من الإنترنت)
+ */
+function createEditor(containerId, placeholder) {
+  const container = $(containerId);
+  if (!container) return null;
+
+  if (typeof Quill !== 'undefined') {
+    const instance = new Quill(container, {
+      theme: 'snow',
+      placeholder: placeholder || '',
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ color: [] }, { background: [] }],
+          [{ align: [] }],
+          ['blockquote', 'code-block'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link', 'image'],
+          ['clean'],
+        ],
+      },
+    });
+    return {
+      mode: 'quill',
+      instance: instance,
+      getHTML: function () { return instance.root.innerHTML; },
+      setHTML: function (html) { instance.root.innerHTML = html || ''; },
+      clear: function () { instance.setContents([]); },
+    };
+  }
+
+  // بديل بسيط بدون Quill
+  const textarea = document.createElement('textarea');
+  textarea.rows = 10;
+  textarea.placeholder = (placeholder || '') + ' (يمكنك كتابة وسوم HTML)';
+  textarea.className = 'editor-textarea-fallback';
+  container.innerHTML = '';
+  container.appendChild(textarea);
+
+  return {
+    mode: 'textarea',
+    instance: textarea,
+    getHTML: function () { return textarea.value; },
+    setHTML: function (html) { textarea.value = html || ''; },
+    clear: function () { textarea.value = ''; },
+  };
+}
+
+// ============================
+// الحماية وتسجيل الدخول
+// ============================
+auth.onAuthStateChanged(function (user) {
+  if (!user) {
+    window.location.replace('login.html');
+    return;
+  }
+  initAdminPanel();
 });
 
-function initAdminPanel(){
-  const toolbarOptions = [
-    [{ 'header': [1,2,3,false] }],
-    ['bold','italic','underline','strike'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
-    ['blockquote','code-block'],
-    [{ 'list':'ordered'}, { 'list':'bullet' }],
-    [{ 'indent':'-1'}, { 'indent':'+1' }],
-    ['link','image','video'],
-    ['clean']
-  ];
-  quill = new Quill('#editor-container', { theme:'snow', modules:{ toolbar: toolbarOptions }, placeholder:'اكتب محتوى المقال هنا...' });
+// ============================
+// تهيئة اللوحة
+// ============================
+function initAdminPanel() {
+  const articleEditor = createEditor('editor-container', 'اكتب محتوى المقال هنا...');
+  if (articleEditor) window.articleEditor = articleEditor;
+
+  document.querySelectorAll('.admin-nav .nav-item').forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      e.preventDefault();
+      switchTab(this.dataset.tab);
+    });
+  });
+
+  const galImage = $('gal_image');
+  if (galImage) {
+    galImage.addEventListener('input', function () {
+      const preview = $('galPreview');
+      if (!preview) return;
+      if (this.value) {
+        preview.src = this.value;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+  }
+
+  // widget رفع صورة المعرض
+  if (typeof createImageUploadWidget === 'function' && $('galleryImageUploadWidget')) {
+    createImageUploadWidget('galleryImageUploadWidget', '', function (url) {
+      setValue('gal_image', url);
+      const preview = $('galPreview');
+      if (preview) { preview.src = url; preview.style.display = 'block'; }
+    });
+  }
+
+  document.querySelectorAll('#appointmentFilters .filter-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('#appointmentFilters .filter-btn').forEach(function (b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      appointmentFilter = this.dataset.filter;
+      loadAppointments();
+    });
+  });
 
   loadDashboard();
   loadArticlesTable();
@@ -26,142 +152,305 @@ function initAdminPanel(){
   loadTestimonialsTable();
   loadGalleryManage();
   checkUnreadMessages();
-
-  document.querySelectorAll('.admin-nav .nav-item').forEach(item=>{
-    item.addEventListener('click', function(e){ e.preventDefault(); switchTab(this.dataset.tab); });
-  });
-
-  document.getElementById('gal_image').addEventListener('input', function(){
-    const preview = document.getElementById('galPreview');
-    if(this.value){ preview.src = this.value; preview.style.display='block'; } else { preview.style.display='none'; }
-  });
+  loadAppointments();
+  checkPendingAppointments();
 }
 
-function switchTab(tabName){
-  document.querySelectorAll('.tab-content').forEach(t => t.style.display='none');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('tab-'+tabName).style.display='block';
-  const navItem = document.querySelector(`[data-tab="${tabName}"]`);
-  if(navItem) navItem.classList.add('active');
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(function (t) { t.style.display = 'none'; });
+  document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
 
-  if(tabName==='new-article' && !document.getElementById('articleId').value) resetEditorForm();
-  if(tabName==='dashboard') loadDashboard();
-  if(tabName==='articles') loadArticlesTable();
-  if(tabName==='services') loadServicesTable();
-  if(tabName==='testimonials') loadTestimonialsTable();
-  if(tabName==='gallery') loadGalleryManage();
-  if(tabName==='messages') loadMessagesTab();
+  const tab = $('tab-' + tabName);
+  if (tab) tab.style.display = 'block';
+
+  const navItem = document.querySelector('[data-tab="' + tabName + '"]');
+  if (navItem) navItem.classList.add('active');
+
+  if (tabName === 'new-article' && !getValue('articleId')) resetEditorForm();
+  if (tabName === 'dashboard') loadDashboard();
+  if (tabName === 'articles') loadArticlesTable();
+  if (tabName === 'services') loadServicesTable();
+  if (tabName === 'testimonials') loadTestimonialsTable();
+  if (tabName === 'gallery') loadGalleryManage();
+  if (tabName === 'messages') loadMessagesTab();
+  if (tabName === 'appointments') loadAppointments();
+  if (tabName === 'site-settings') loadSettingsForm();
 }
-// ============================
-// إدارة الخدمات (Admin)
-// ============================
 
-let serviceQuill = null;
-let currentServiceGallery = [];
+// ============================
+// لوحة البيانات
+// ============================
+async function loadDashboard() {
+  try {
+    const articles = await getArticles();
+    const services = await getServices();
+    const messages = await getMessages();
 
-// تهيئة محرر Quill الخاص بوصف الخدمة (يُستدعى مرة واحدة)
+    if ($('statTotal')) $('statTotal').textContent = articles.length;
+    if ($('statPublished')) $('statPublished').textContent = articles.filter(function (a) { return a.status === 'published'; }).length;
+    if ($('statServices')) $('statServices').textContent = services.length;
+    if ($('statMessages')) $('statMessages').textContent = messages.filter(function (m) { return !m.read; }).length;
+
+    try {
+      const appointments = await getAppointments();
+      if ($('statAppointments')) {
+        $('statAppointments').textContent = appointments.filter(function (a) { return a.status === 'pending'; }).length;
+      }
+    } catch (err) {
+      console.warn('تعذر جلب المواعيد:', err);
+    }
+
+    const recent = articles.slice(0, 5);
+    const table = $('recentArticlesTable');
+    if (table) {
+      table.innerHTML = recent.map(function (a) {
+        return '<tr><td>' + esc(a.title) + '</td><td>' + esc(a.category) + '</td><td>' + esc(adminFormatDate(a.date)) + '</td>' +
+          '<td><span class="badge badge-' + (a.status === 'published' ? 'published' : 'draft') + '">' +
+          (a.status === 'published' ? 'منشور' : 'مسودة') + '</span></td></tr>';
+      }).join('') || '<tr><td colspan="4" style="text-align:center;">لا توجد مقالات</td></tr>';
+    }
+  } catch (err) {
+    console.error(err);
+    showToast(firebaseErrorMessage(err), 'error');
+  }
+}
+
+async function checkUnreadMessages() {
+  try {
+    const messages = await getMessages();
+    const unread = messages.filter(function (m) { return !m.read; }).length;
+    const badge = $('msgBadge');
+    if (badge && unread > 0) {
+      badge.textContent = unread;
+      badge.style.display = 'inline-block';
+    }
+  } catch (err) {
+    console.warn('تعذر جلب الرسائل:', err);
+  }
+}
+
+// ============================
+// إدارة المقالات
+// ============================
+async function loadArticlesTable() {
+  const tableBody = $('articlesTable');
+  if (!tableBody) return;
+  tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i></td></tr>';
+  try {
+    const articles = await getArticles();
+    tableBody.innerHTML = articles.map(function (a) {
+      return '<tr>' +
+        '<td>' + esc(a.title) + '</td>' +
+        '<td>' + esc(a.category) + '</td>' +
+        '<td>' + esc(a.author) + '</td>' +
+        '<td>' + esc(a.date) + '</td>' +
+        '<td><span class="badge badge-' + (a.status === 'published' ? 'published' : 'draft') + '">' +
+          (a.status === 'published' ? 'منشور' : 'مسودة') + '</span></td>' +
+        '<td class="table-actions">' +
+          '<button class="icon-btn edit" onclick="editArticle(\'' + esc(a.id) + '\')" title="تعديل"><i class="fas fa-edit"></i></button>' +
+          '<button class="icon-btn delete" onclick="confirmDelete(\'' + esc(a.id) + '\')" title="حذف"><i class="fas fa-trash"></i></button>' +
+        '</td></tr>';
+    }).join('') || '<tr><td colspan="6" style="text-align:center;padding:40px;">لا توجد مقالات</td></tr>';
+  } catch (err) {
+    tableBody.innerHTML = '<tr><td colspan="6" style="color:#dc2626;text-align:center;">' + esc(firebaseErrorMessage(err)) + '</td></tr>';
+  }
+}
+
+function resetEditorForm() {
+  if ($('editorTitle')) $('editorTitle').textContent = 'مقال جديد';
+  setValue('articleId', '');
+  setValue('artTitle', '');
+  setValue('artImage', '');
+  setValue('artCategory', 'تأسيس');
+  setValue('artStatus', 'published');
+  setValue('artExcerpt', '');
+  if (window.articleEditor) window.articleEditor.clear();
+}
+
+async function editArticle(id) {
+  const article = await getArticleById(id);
+  if (!article) return showToast('لم يتم العثور على المقال', 'error');
+
+  switchTab('new-article');
+  if ($('editorTitle')) $('editorTitle').textContent = 'تعديل المقال';
+  setValue('articleId', article.id);
+  setValue('artTitle', article.title);
+  setValue('artImage', article.image);
+  setValue('artCategory', article.category);
+  setValue('artStatus', article.status);
+  setValue('artExcerpt', article.excerpt);
+  if (window.articleEditor) window.articleEditor.setHTML(article.content || '');
+}
+
+async function saveArticleForm(btn) {
+  const id = getValue('articleId');
+  const title = getTrimmed('artTitle');
+  const image = getTrimmed('artImage') || 'assets/photo-1.jpg';
+  const category = getValue('artCategory');
+  const status = getValue('artStatus');
+  const excerpt = getTrimmed('artExcerpt');
+  const content = window.articleEditor ? window.articleEditor.getHTML() : '';
+
+  if (!title) return showToast('الرجاء إدخال عنوان المقال', 'error');
+  if (!excerpt) return showToast('الرجاء إدخال وصف مختصر', 'error');
+
+  const data = {
+    title: title,
+    image: image,
+    category: category,
+    status: status,
+    excerpt: excerpt,
+    content: content,
+    author: 'فريق الممتاز',
+    date: new Date().toISOString().split('T')[0],
+  };
+
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; }
+  try {
+    if (id) {
+      await updateArticle(id, data);
+      showToast('تم تحديث المقال بنجاح', 'success');
+    } else {
+      await addArticle(data);
+      showToast('تم نشر المقال بنجاح', 'success');
+    }
+    switchTab('articles');
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> حفظ المقال'; }
+  }
+}
+
+async function confirmDelete(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا المقال؟')) return;
+  try {
+    await deleteArticle(id);
+    showToast('تم حذف المقال', 'success');
+    loadArticlesTable();
+    loadDashboard();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
+}
+
+// ============================
+// إعدادات الموقع
+// ============================
+const SETTINGS_FIELDS = [
+  'phone', 'whatsapp', 'email', 'address', 'workHours', 'facebook', 'twitter', 'instagram',
+  'heroBadge', 'heroTitlePart1', 'heroHighlight', 'heroTitlePart2', 'heroDescription',
+  'stat1Number', 'stat1Label', 'stat2Number', 'stat2Label', 'stat3Number', 'stat3Label', 'stat4Number', 'stat4Label',
+  'aboutText1', 'aboutText2', 'mapEmbedUrl',
+];
+
+async function loadSettingsForm() {
+  try {
+    const s = await getSettings();
+    SETTINGS_FIELDS.forEach(function (key) {
+      if (s[key] !== undefined) setValue('set_' + key, s[key]);
+    });
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
+}
+
+async function saveSettingsForm(btn) {
+  const data = {};
+  SETTINGS_FIELDS.forEach(function (f) {
+    const el = $('set_' + f);
+    if (el) data[f] = el.value;
+  });
+
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; }
+  try {
+    await saveSettings(data);
+    showToast('تم حفظ الإعدادات، وستظهر على الموقع فوراً', 'success');
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> حفظ جميع الإعدادات'; }
+  }
+}
+
+// ============================
+// إدارة الخدمات
+// ============================
 function initServiceQuillEditor() {
-  if (serviceQuill) return; // تجنب التهيئة المكررة
-  serviceQuill = new Quill("#serviceQuillEditor", {
-    theme: "snow",
-    placeholder: "اكتب وصفاً تفصيلياً للخدمة...",
-    modules: {
-      toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ color: [] }, { background: [] }],
-        [{ align: [] }],
-        ["blockquote", "code-block"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["link", "image"],
-        ["clean"],
-      ],
-    },
-  });
+  if (serviceQuill) return;
+  serviceQuill = createEditor('serviceQuillEditor', 'اكتب وصفاً تفصيلياً للخدمة...');
 }
 
-// تحميل جدول الخدمات
 async function loadServicesTable() {
-  const tbody = document.getElementById("servicesTableBody");
-  tbody.innerHTML = `<tr><td colspan="5" class="text-center">جاري التحميل...</td></tr>`;
+  const tbody = $('servicesTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">جاري التحميل...</td></tr>';
 
   const services = await getServices();
 
-  if (services.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-center">لا توجد خدمات مضافة بعد</td></tr>`;
+  if (!services.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد خدمات مضافة بعد. اضغط "إضافة خدمة جديدة".</td></tr>';
     return;
   }
 
-  tbody.innerHTML = services
-    .map(
-      (s) => `
-    <tr>
-      <td><img src="${s.image ? optimizedImageUrl(s.image, 100) : 'assets/logo.svg'}" alt="${s.title}"></td>
-      <td><strong>${s.title}</strong></td>
-      <td>${(s.shortDesc || "").substring(0, 50)}${s.shortDesc && s.shortDesc.length > 50 ? "..." : ""}</td>
-      <td><a href="service.html?slug=${s.slug}" target="_blank" style="color:#2563eb">${s.slug}</a></td>
-      <td>
-        <div class="action-icons-group">
-          <button class="icon-btn" onclick="editService('${s.id}')" title="تعديل"><i class="fas fa-edit"></i></button>
-          <button class="icon-btn danger" onclick="removeService('${s.id}')" title="حذف"><i class="fas fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>
-  `
-    )
-    .join("");
+  tbody.innerHTML = services.map(function (s) {
+    const thumb = s.image ? optimizedImageUrl(s.image, 100) : 'assets/logo.svg';
+    const shortDesc = String(s.shortDesc || s.description || '');
+    return '<tr>' +
+      '<td><img src="' + esc(thumb) + '" alt="' + esc(s.title) + '" onerror="this.src=\'assets/placeholder.svg\'"></td>' +
+      '<td><strong>' + esc(s.title) + '</strong></td>' +
+      '<td>' + esc(shortDesc.substring(0, 50)) + (shortDesc.length > 50 ? '...' : '') + '</td>' +
+      '<td><a href="service.html?slug=' + encodeURIComponent(s.slug || s.id) + '" target="_blank" rel="noopener" style="color:#2563eb" dir="ltr">' + esc(s.slug || s.id) + '</a></td>' +
+      '<td><div class="action-icons-group">' +
+        '<button class="icon-btn edit" onclick="editService(\'' + esc(s.id) + '\')" title="تعديل"><i class="fas fa-edit"></i></button>' +
+        '<button class="icon-btn danger" onclick="removeService(\'' + esc(s.id) + '\')" title="حذف"><i class="fas fa-trash"></i></button>' +
+      '</div></td></tr>';
+  }).join('');
 }
 
-// فتح نموذج إضافة خدمة جديدة (فارغ)
 function openServiceForm() {
-  document.getElementById("serviceFormTitle").textContent = "إضافة خدمة جديدة";
-  document.getElementById("serviceId").value = "";
-  document.getElementById("serviceTitleInput").value = "";
-  document.getElementById("serviceIconInput").value = "fas fa-bolt";
-  document.getElementById("serviceSlugInput").value = "";
-  document.getElementById("serviceShortDescInput").value = "";
-  document.getElementById("serviceFeaturesInput").value = "";
-  document.getElementById("serviceMetaTitleInput").value = "";
-  document.getElementById("serviceMetaDescInput").value = "";
+  if ($('serviceFormTitle')) $('serviceFormTitle').textContent = 'إضافة خدمة جديدة';
+  setValue('serviceId', '');
+  setValue('serviceTitleInput', '');
+  setValue('serviceIconInput', 'fas fa-bolt');
+  setValue('serviceSlugInput', '');
+  setValue('serviceShortDescInput', '');
+  setValue('serviceFeaturesInput', '');
+  setValue('serviceMetaTitleInput', '');
+  setValue('serviceMetaDescInput', '');
   currentServiceGallery = [];
 
-  document.getElementById("serviceFormModal").style.display = "flex";
+  if ($('serviceFormModal')) $('serviceFormModal').style.display = 'flex';
 
-  // تهيئة widget الصورة الرئيسية
-  createImageUploadWidget("serviceImageUploadWidget", "", () => {});
-
-  // تهيئة widget صورة المعرض المؤقت
-  createImageUploadWidget("serviceGalleryUploadWidget", "", (url) => {
-    currentServiceGallery.push(url);
-    renderServiceGalleryPreview();
-    // إعادة تهيئة الـ widget لصورة جديدة
-    createImageUploadWidget("serviceGalleryUploadWidget", "", arguments.callee);
-  });
+  if (typeof createImageUploadWidget === 'function') {
+    createImageUploadWidget('serviceImageUploadWidget', '', function () {});
+    createImageUploadWidget('serviceGalleryUploadWidget', '', addGalleryImageHandler);
+  }
 
   renderServiceGalleryPreview();
-
-  // تهيئة Quill وتفريغه
   initServiceQuillEditor();
-  serviceQuill.root.innerHTML = "";
-
-  // عداد حروف الميتا ديسكريبشن
+  if (serviceQuill) serviceQuill.clear();
   setupMetaDescCounter();
 }
 
-// عرض/تحديث صور المعرض المؤقتة أثناء التحرير
+// إضافة صورة إلى معرض الخدمة المؤقت (يُعاد ربط الـ widget بعد النجاح)
+function addGalleryImageHandler(url) {
+  currentServiceGallery.push(url);
+  renderServiceGalleryPreview();
+  if (typeof createImageUploadWidget === 'function') {
+    createImageUploadWidget('serviceGalleryUploadWidget', '', addGalleryImageHandler);
+  }
+}
+
 function renderServiceGalleryPreview() {
-  const container = document.getElementById("serviceGalleryPreviewList");
-  container.innerHTML = currentServiceGallery
-    .map(
-      (url, index) => `
-    <div class="gallery-manage-item">
-      <img src="${optimizedImageUrl(url, 150)}" alt="صورة">
-      <button type="button" class="remove-img-btn" onclick="removeServiceGalleryImage(${index})">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>`
-    )
-    .join("");
+  const container = $('serviceGalleryPreviewList');
+  if (!container) return;
+  container.innerHTML = currentServiceGallery.map(function (url, index) {
+    return '<div class="gallery-manage-item">' +
+      '<img src="' + esc(optimizedImageUrl(url, 150)) + '" alt="صورة الخدمة">' +
+      '<button type="button" class="remove-img-btn" onclick="removeServiceGalleryImage(' + index + ')"><i class="fas fa-times"></i></button>' +
+      '</div>';
+  }).join('');
 }
 
 function removeServiceGalleryImage(index) {
@@ -170,422 +459,426 @@ function removeServiceGalleryImage(index) {
 }
 
 function addServiceGalleryImage() {
-  // إعادة تعيين widget المعرض لرفع صورة جديدة (الزر موجود أصلاً، فقط تنبيه بصري)
-  document.getElementById("serviceGalleryUploadWidget").scrollIntoView({ behavior: "smooth", block: "center" });
+  const widget = $('serviceGalleryUploadWidget');
+  if (widget && typeof widget.scrollIntoView === 'function') widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// عداد حروف الميتا ديسكريبشن
 function setupMetaDescCounter() {
-  const input = document.getElementById("serviceMetaDescInput");
-  const counter = document.getElementById("metaDescCounter");
+  const input = $('serviceMetaDescInput');
+  const counter = $('metaDescCounter');
+  if (!input || !counter) return;
 
   function update() {
     const len = input.value.length;
-    counter.textContent = `${len} حرف`;
-    counter.style.color = len > 160 ? "#dc2626" : len < 50 && len > 0 ? "#d97706" : "#16a34a";
+    counter.textContent = len + ' حرف';
+    counter.style.color = len > 160 ? '#dc2626' : (len < 50 && len > 0 ? '#d97706' : '#16a34a');
   }
-
-  input.removeEventListener("input", update);
-  input.addEventListener("input", update);
+  input.removeEventListener('input', update);
+  input.addEventListener('input', update);
   update();
 }
 
-// فتح نموذج تعديل خدمة موجودة
 async function editService(id) {
   const service = await getServiceById(id);
-  if (!service) return showToast("لم يتم العثور على الخدمة", "error");
+  if (!service) return showToast('لم يتم العثور على الخدمة', 'error');
 
-  document.getElementById("serviceFormTitle").textContent = "تعديل الخدمة";
-  document.getElementById("serviceId").value = service.id;
-  document.getElementById("serviceTitleInput").value = service.title || "";
-  document.getElementById("serviceIconInput").value = service.icon || "fas fa-bolt";
-  document.getElementById("serviceSlugInput").value = service.slug || "";
-  document.getElementById("serviceShortDescInput").value = service.shortDesc || "";
-  document.getElementById("serviceFeaturesInput").value = (service.features || []).join("\n");
-  document.getElementById("serviceMetaTitleInput").value = service.metaTitle || "";
-  document.getElementById("serviceMetaDescInput").value = service.metaDescription || "";
-  currentServiceGallery = service.gallery ? [...service.gallery] : [];
+  if ($('serviceFormTitle')) $('serviceFormTitle').textContent = 'تعديل الخدمة';
+  setValue('serviceId', service.id);
+  setValue('serviceTitleInput', service.title);
+  setValue('serviceIconInput', service.icon || 'fas fa-bolt');
+  setValue('serviceSlugInput', service.slug || '');
+  setValue('serviceShortDescInput', service.shortDesc || '');
+  setValue('serviceFeaturesInput', (service.features || []).join('\n'));
+  setValue('serviceMetaTitleInput', service.metaTitle || '');
+  setValue('serviceMetaDescInput', service.metaDescription || '');
+  currentServiceGallery = service.gallery ? service.gallery.slice() : [];
 
-  document.getElementById("serviceFormModal").style.display = "flex";
+  if ($('serviceFormModal')) $('serviceFormModal').style.display = 'flex';
 
-  createImageUploadWidget("serviceImageUploadWidget", service.image || "", () => {});
-
-  createImageUploadWidget("serviceGalleryUploadWidget", "", function handler(url) {
-    currentServiceGallery.push(url);
-    renderServiceGalleryPreview();
-    createImageUploadWidget("serviceGalleryUploadWidget", "", handler);
-  });
+  if (typeof createImageUploadWidget === 'function') {
+    createImageUploadWidget('serviceImageUploadWidget', service.image || '', function () {});
+    createImageUploadWidget('serviceGalleryUploadWidget', '', addGalleryImageHandler);
+  }
 
   renderServiceGalleryPreview();
-
   initServiceQuillEditor();
-  serviceQuill.root.innerHTML = service.fullDescription || "";
-
+  if (serviceQuill) serviceQuill.setHTML(service.fullDescription || '');
   setupMetaDescCounter();
 }
 
 function closeServiceForm() {
-  document.getElementById("serviceFormModal").style.display = "none";
+  if ($('serviceFormModal')) $('serviceFormModal').style.display = 'none';
 }
 
-// حفظ الخدمة (إضافة أو تعديل)
-async function saveServiceForm() {
-  const id = document.getElementById("serviceId").value;
-  const title = document.getElementById("serviceTitleInput").value.trim();
+async function saveServiceForm(btn) {
+  const id = getValue('serviceId');
+  const title = getTrimmed('serviceTitleInput');
+  if (!title) return showToast('يرجى إدخال اسم الخدمة', 'error');
 
-  if (!title) {
-    showToast("يرجى إدخال اسم الخدمة", "error");
-    return;
-  }
-
-  const featuresRaw = document.getElementById("serviceFeaturesInput").value.trim();
-  const features = featuresRaw ? featuresRaw.split("\n").map((f) => f.trim()).filter(Boolean) : [];
+  const featuresRaw = getTrimmed('serviceFeaturesInput');
+  const features = featuresRaw ? featuresRaw.split('\n').map(function (f) { return f.trim(); }).filter(Boolean) : [];
 
   const data = {
     title: title,
-    icon: document.getElementById("serviceIconInput").value.trim() || "fas fa-bolt",
-    slug: document.getElementById("serviceSlugInput").value.trim() || generateSlug(title),
-    shortDesc: document.getElementById("serviceShortDescInput").value.trim(),
-    image: getImageWidgetValue("serviceImageUploadWidget"),
+    icon: getTrimmed('serviceIconInput') || 'fas fa-bolt',
+    slug: getTrimmed('serviceSlugInput') || generateSlug(title),
+    shortDesc: getTrimmed('serviceShortDescInput'),
+    image: (typeof getImageWidgetValue === 'function' ? getImageWidgetValue('serviceImageUploadWidget') : '') || '',
     gallery: currentServiceGallery,
-    fullDescription: serviceQuill ? serviceQuill.root.innerHTML : "",
+    fullDescription: serviceQuill ? serviceQuill.getHTML() : '',
     features: features,
-    metaTitle: document.getElementById("serviceMetaTitleInput").value.trim(),
-    metaDescription: document.getElementById("serviceMetaDescInput").value.trim(),
+    metaTitle: getTrimmed('serviceMetaTitleInput'),
+    metaDescription: getTrimmed('serviceMetaDescInput'),
   };
 
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; }
   try {
     if (id) {
       await updateService(id, data);
-      showToast("تم تحديث الخدمة بنجاح", "success");
+      showToast('تم تحديث الخدمة بنجاح', 'success');
     } else {
       await addService(data);
-      showToast("تم إضافة الخدمة بنجاح", "success");
+      showToast('تمت إضافة الخدمة بنجاح', 'success');
     }
     closeServiceForm();
     loadServicesTable();
-  } catch (e) {
-    showToast("حدث خطأ: " + e.message, "error");
+    loadDashboard();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> حفظ الخدمة'; }
   }
 }
 
 async function removeService(id) {
-  if (!confirm("هل أنت متأكد من حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.")) return;
+  if (!confirm('هل أنت متأكد من حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.')) return;
   try {
     await deleteService(id);
-    showToast("تم حذف الخدمة", "success");
+    showToast('تم حذف الخدمة', 'success');
     loadServicesTable();
-  } catch (e) {
-    showToast("حدث خطأ أثناء الحذف", "error");
+    loadDashboard();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
   }
 }
 
-// ============== DASHBOARD ==============
-async function loadDashboard(){
-  try{
-    const articles = await getArticles();
-    const services = await getServices();
-    const messages = await getMessages();
-    document.getElementById('statTotal').textContent = articles.length;
-    document.getElementById('statPublished').textContent = articles.filter(a=>a.status==='published').length;
-    document.getElementById('statServices').textContent = services.length;
-    document.getElementById('statMessages').textContent = messages.filter(m=>!m.read).length;
-
-    const recent = articles.slice(0,5);
-    document.getElementById('recentArticlesTable').innerHTML = recent.map(a=>`
-      <tr><td>${a.title}</td><td>${a.category}</td><td>${a.date}</td>
-      <td><span class="badge badge-${a.status==='published'?'published':'draft'}">${a.status==='published'?'منشور':'مسودة'}</span></td></tr>
-    `).join('') || '<tr><td colspan="4" style="text-align:center;">لا توجد مقالات</td></tr>';
-  }catch(err){ console.error(err); }
-}
-
-async function checkUnreadMessages(){
-  try{
-    const messages = await getMessages();
-    const unread = messages.filter(m=>!m.read).length;
-    const badge = document.getElementById('msgBadge');
-    if(unread > 0){ badge.textContent = unread; badge.style.display='inline-block'; }
-  }catch(err){ console.error(err); }
-}
-
-// ============== ARTICLES ==============
-async function loadArticlesTable(){
-  const tableBody = document.getElementById('articlesTable');
-  tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i></td></tr>';
-  try{
-    const articles = await getArticles();
-    tableBody.innerHTML = articles.map(a=>`
-      <tr>
-        <td>${a.title}</td><td>${a.category}</td><td>${a.author}</td><td>${a.date}</td>
-        <td><span class="badge badge-${a.status==='published'?'published':'draft'}">${a.status==='published'?'منشور':'مسودة'}</span></td>
-        <td class="table-actions">
-          <button class="icon-btn edit" onclick="editArticle('${a.id}')"><i class="fas fa-edit"></i></button>
-          <button class="icon-btn delete" onclick="confirmDelete('${a.id}')"><i class="fas fa-trash"></i></button>
-        </td>
-      </tr>
-    `).join('') || '<tr><td colspan="6" style="text-align:center;padding:40px;">لا توجد مقالات</td></tr>';
-  }catch(err){ tableBody.innerHTML = `<tr><td colspan="6" style="color:red;text-align:center;">${err.message}</td></tr>`; }
-}
-
-function resetEditorForm(){
-  document.getElementById('editorTitle').textContent='مقال جديد';
-  document.getElementById('articleId').value='';
-  document.getElementById('artTitle').value='';
-  document.getElementById('artImage').value='';
-  document.getElementById('artCategory').value='تأسيس';
-  document.getElementById('artStatus').value='published';
-  document.getElementById('artExcerpt').value='';
-  if(quill) quill.setContents([]);
-}
-
-async function editArticle(id){
-  const article = await getArticleById(id);
-  if(!article) return;
-  switchTab('new-article');
-  document.getElementById('editorTitle').textContent='تعديل المقال';
-  document.getElementById('articleId').value=article.id;
-  document.getElementById('artTitle').value=article.title;
-  document.getElementById('artImage').value=article.image;
-  document.getElementById('artCategory').value=article.category;
-  document.getElementById('artStatus').value=article.status;
-  document.getElementById('artExcerpt').value=article.excerpt;
-  quill.root.innerHTML = article.content;
-}
-
-async function saveArticleForm(){
-  const id = document.getElementById('articleId').value;
-  const title = document.getElementById('artTitle').value.trim();
-  const image = document.getElementById('artImage').value.trim() || 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800';
-  const category = document.getElementById('artCategory').value;
-  const status = document.getElementById('artStatus').value;
-  const excerpt = document.getElementById('artExcerpt').value.trim();
-  const content = quill.root.innerHTML;
-  if(!title){ alert('الرجاء إدخال عنوان المقال'); return; }
-  if(!excerpt){ alert('الرجاء إدخال وصف مختصر'); return; }
-  const data = { title, image, category, status, excerpt, content, author:'فريق الممتاز', date:new Date().toISOString().split('T')[0] };
-  const btn = event.target;
-  btn.disabled = true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
-  try{
-    if(id){ await updateArticle(id, data); alert('تم التحديث بنجاح ✅'); }
-    else{ await addArticle(data); alert('تم النشر بنجاح ✅'); }
-    switchTab('articles');
-  }catch(err){ alert('خطأ: '+err.message); }
-  finally{ btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> حفظ المقال'; }
-}
-
-async function confirmDelete(id){
-  if(confirm('هل أنت متأكد من حذف هذا المقال؟')){
-    await deleteArticle(id); loadArticlesTable(); loadDashboard();
+// ============================
+// آراء العملاء
+// ============================
+async function loadTestimonialsTable() {
+  const tableBody = $('testimonialsTable');
+  if (!tableBody) return;
+  try {
+    const items = await getTestimonials();
+    tableBody.innerHTML = items.map(function (t) {
+      const rating = Math.max(0, Math.min(5, parseInt(t.rating, 10) || 0));
+      return '<tr>' +
+        '<td>' + esc(t.name) + '</td>' +
+        '<td>' + '★'.repeat(rating) + '</td>' +
+        '<td style="max-width:300px;">' + esc(t.text) + '</td>' +
+        '<td class="table-actions"><button class="icon-btn delete" onclick="removeTestimonial(\'' + esc(t.id) + '\')" title="حذف"><i class="fas fa-trash"></i></button></td>' +
+        '</tr>';
+    }).join('') || '<tr><td colspan="4" style="text-align:center;padding:30px;">لا توجد آراء بعد</td></tr>';
+  } catch (err) {
+    tableBody.innerHTML = '<tr><td colspan="4" style="color:#dc2626;text-align:center;">' + esc(firebaseErrorMessage(err)) + '</td></tr>';
   }
 }
 
-// ============== SITE SETTINGS ==============
-async function loadSettingsForm(){
-  const s = await getSettings();
-  Object.keys(s).forEach(key=>{
-    const el = document.getElementById('set_'+key);
-    if(el) el.value = s[key];
-  });
-}
+async function saveTestimonialForm() {
+  const name = getTrimmed('tst_name');
+  const role = getTrimmed('tst_role');
+  const image = getTrimmed('tst_image');
+  const rating = parseInt(getValue('tst_rating'), 10);
+  const text = getTrimmed('tst_text');
+  if (!name || !text) return showToast('الرجاء تعبئة الاسم والنص', 'error');
 
-async function saveSettingsForm(){
-  const fields = ['phone','whatsapp','email','address','workHours','facebook','twitter','instagram',
-    'heroBadge','heroTitlePart1','heroHighlight','heroTitlePart2','heroDescription',
-    'stat1Number','stat1Label','stat2Number','stat2Label','stat3Number','stat3Label','stat4Number','stat4Label',
-    'aboutText1','aboutText2','mapEmbedUrl'];
-  const data = {};
-  fields.forEach(f=>{
-    const el = document.getElementById('set_'+f);
-    if(el) data[f] = el.value;
-  });
-  const btn = event.target;
-  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
-  try{
-    await saveSettings(data);
-    alert('تم حفظ الإعدادات بنجاح ✅ (ستظهر التحديثات فوراً على الموقع)');
-  }catch(err){ alert('خطأ: '+err.message); }
-  finally{ btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> حفظ جميع الإعدادات'; }
-}
-
-// ============== SERVICES ==============
-async function loadServicesTable(){
-  const tableBody = document.getElementById('servicesTable');
-  tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i></td></tr>';
-  const services = await getServices();
-  tableBody.innerHTML = services.map(s=>`
-    <tr>
-      <td><i class="${s.icon}" style="font-size:20px;color:var(--accent-dark);"></i></td>
-      <td>${s.title}</td>
-      <td style="max-width:300px;">${s.description}</td>
-      <td class="table-actions">
-        <button class="icon-btn edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></button>
-        <button class="icon-btn delete" onclick="removeService('${s.id}')"><i class="fas fa-trash"></i></button>
-      </td>
-    </tr>
-  `).join('') || '<tr><td colspan="4" style="text-align:center;padding:30px;">لا توجد خدمات بعد</td></tr>';
-}
-
-function resetServiceForm(){
-  document.getElementById('serviceFormTitle').textContent = 'إضافة خدمة جديدة';
-  document.getElementById('serviceId').value='';
-  document.getElementById('srv_icon').value='';
-  document.getElementById('srv_title').value='';
-  document.getElementById('srv_desc').value='';
-}
-
-async function editService(id){
-  const s = await getServiceById(id);
-  if(!s) return;
-  document.getElementById('serviceFormTitle').textContent='تعديل الخدمة';
-  document.getElementById('serviceId').value=s.id;
-  document.getElementById('srv_icon').value=s.icon;
-  document.getElementById('srv_title').value=s.title;
-  document.getElementById('srv_desc').value=s.description;
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
-async function saveServiceForm(){
-  const id = document.getElementById('serviceId').value;
-  const icon = document.getElementById('srv_icon').value.trim() || 'fas fa-bolt';
-  const title = document.getElementById('srv_title').value.trim();
-  const description = document.getElementById('srv_desc').value.trim();
-  if(!title || !description){ alert('الرجاء تعبئة جميع الحقول'); return; }
-  try{
-    if(id){ await updateService(id, {icon,title,description}); alert('تم تحديث الخدمة ✅'); }
-    else{ await addService({icon,title,description}); alert('تمت إضافة الخدمة ✅'); }
-    resetServiceForm();
-    loadServicesTable();
-  }catch(err){ alert('خطأ: '+err.message); }
-}
-
-async function removeService(id){
-  if(confirm('حذف هذه الخدمة؟')){ await deleteService(id); loadServicesTable(); }
-}
-
-// ============== TESTIMONIALS ==============
-async function loadTestimonialsTable(){
-  const tableBody = document.getElementById('testimonialsTable');
-  const items = await getTestimonials();
-  tableBody.innerHTML = items.map(t=>`
-    <tr>
-      <td>${t.name}</td>
-      <td>${'⭐'.repeat(t.rating)}</td>
-      <td style="max-width:300px;">${t.text}</td>
-      <td class="table-actions">
-        <button class="icon-btn delete" onclick="removeTestimonial('${t.id}')"><i class="fas fa-trash"></i></button>
-      </td>
-    </tr>
-  `).join('') || '<tr><td colspan="4" style="text-align:center;padding:30px;">لا توجد آراء بعد</td></tr>';
-}
-
-async function saveTestimonialForm(){
-  const name = document.getElementById('tst_name').value.trim();
-  const role = document.getElementById('tst_role').value.trim();
-  const image = document.getElementById('tst_image').value.trim();
-  const rating = parseInt(document.getElementById('tst_rating').value);
-  const text = document.getElementById('tst_text').value.trim();
-  if(!name || !text){ alert('الرجاء تعبئة الاسم والنص'); return; }
-  try{
-    await addTestimonial({name, role, image, rating, text});
-    alert('تمت إضافة الرأي ✅');
-    document.getElementById('tst_name').value='';
-    document.getElementById('tst_role').value='';
-    document.getElementById('tst_image').value='';
-    document.getElementById('tst_text').value='';
+  try {
+    await addTestimonial({ name: name, role: role, image: image, rating: rating, text: text });
+    showToast('تمت إضافة الرأي', 'success');
+    ['tst_name', 'tst_role', 'tst_image', 'tst_text'].forEach(function (id) { setValue(id, ''); });
     loadTestimonialsTable();
-  }catch(err){ alert('خطأ: '+err.message); }
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
 }
 
-async function removeTestimonial(id){
-  if(confirm('حذف هذا الرأي؟')){ await deleteTestimonial(id); loadTestimonialsTable(); }
+async function removeTestimonial(id) {
+  if (!confirm('حذف هذا الرأي؟')) return;
+  try {
+    await deleteTestimonial(id);
+    showToast('تم الحذف', 'success');
+    loadTestimonialsTable();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
 }
 
-// ============== GALLERY ==============
-async function loadGalleryManage(){
-  const container = document.getElementById('galleryManageGrid');
-  const items = await getGallery();
-  container.innerHTML = items.map(g=>`
-    <div class="service-card" style="text-align:right;">
-      <img src="${g.image}" style="width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:12px;">
-      <h3 style="font-size:16px;">${g.title}</h3>
-      <button class="btn btn-dark" style="width:100%;margin-top:10px;" onclick="removeGalleryItem('${g.id}')"><i class="fas fa-trash"></i> حذف</button>
-    </div>
-  `).join('') || '<p style="grid-column:1/-1;text-align:center;color:var(--gray);">لا توجد صور بعد</p>';
+// ============================
+// معرض الأعمال
+// ============================
+async function loadGalleryManage() {
+  const container = $('galleryManageGrid');
+  if (!container) return;
+  try {
+    const items = await getGallery();
+    container.innerHTML = items.map(function (g) {
+      return '<div class="service-card" style="text-align:right;">' +
+        '<img src="' + esc(g.image) + '" alt="' + esc(g.title) + '" style="width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:12px;" onerror="this.src=\'assets/placeholder.svg\'">' +
+        '<h3 style="font-size:16px;">' + esc(g.title) + '</h3>' +
+        '<button class="btn btn-dark" style="width:100%;margin-top:10px;" onclick="removeGalleryItem(\'' + esc(g.id) + '\')"><i class="fas fa-trash"></i> حذف</button>' +
+        '</div>';
+    }).join('') || '<p style="grid-column:1/-1;text-align:center;color:var(--gray);">لا توجد صور بعد</p>';
+  } catch (err) {
+    container.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#dc2626;">' + esc(firebaseErrorMessage(err)) + '</p>';
+  }
 }
 
-async function saveGalleryForm(){
-  const image = document.getElementById('gal_image').value.trim();
-  const title = document.getElementById('gal_title').value.trim();
-  if(!image || !title){ alert('الرجاء تعبئة رابط الصورة والعنوان'); return; }
-  try{
-    await addGalleryItem({image, title});
-    alert('تمت الإضافة للمعرض ✅');
-    document.getElementById('gal_image').value='';
-    document.getElementById('gal_title').value='';
-    document.getElementById('galPreview').style.display='none';
+async function saveGalleryForm() {
+  const image = getTrimmed('gal_image');
+  const title = getTrimmed('gal_title');
+  if (!image || !title) return showToast('الرجاء تعبئة رابط الصورة والعنوان', 'error');
+  try {
+    await addGalleryItem({ image: image, title: title });
+    showToast('تمت الإضافة للمعرض', 'success');
+    setValue('gal_image', '');
+    setValue('gal_title', '');
+    if ($('galPreview')) $('galPreview').style.display = 'none';
     loadGalleryManage();
-  }catch(err){ alert('خطأ: '+err.message); }
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
 }
 
-async function removeGalleryItem(id){
-  if(confirm('حذف هذه الصورة؟')){ await deleteGalleryItem(id); loadGalleryManage(); }
+async function removeGalleryItem(id) {
+  if (!confirm('حذف هذه الصورة؟')) return;
+  try {
+    await deleteGalleryItem(id);
+    showToast('تم الحذف', 'success');
+    loadGalleryManage();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
 }
 
-// ============== MESSAGES ==============
-async function loadMessagesTab(){
-  const container = document.getElementById('messagesContainer');
+// ============================
+// المواعيد
+// ============================
+let appointmentFilter = 'all';
+let appointmentsCache = [];
+
+async function loadAppointments() {
+  const container = $('appointmentsContainer');
+  if (!container) return;
+  container.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> جاري تحميل المواعيد...</p>';
+
+  try {
+    appointmentsCache = await getAppointments();
+  } catch (err) {
+    container.innerHTML = '<p style="color:#dc2626;">' + esc(firebaseErrorMessage(err)) + '</p>';
+    return;
+  }
+
+  const list = appointmentFilter === 'all'
+    ? appointmentsCache
+    : appointmentsCache.filter(function (a) { return a.status === appointmentFilter; });
+
+  if (!list.length) {
+    container.innerHTML = '<p style="text-align:center;color:var(--gray);padding:40px;">لا توجد مواعيد في هذا التصنيف</p>';
+    return;
+  }
+
+  container.innerHTML = list.map(function (a) {
+    const status = a.status || 'pending';
+    const label = APPOINTMENT_STATUS[status] || status;
+    const phoneDigits = String(a.phone || '').replace(/[^0-9]/g, '');
+    const waText = encodeURIComponent(
+      'مرحباً ' + (a.name || '') + '، بخصوص موعدكم مع شركة الممتاز للأعمال الكهربائية يوم ' +
+      (a.date || '') + ' الساعة ' + (a.time || '') + ' لخدمة ' + (a.service || '') + '.'
+    );
+
+    const actions = [];
+    if (status !== 'confirmed' && status !== 'done') {
+      actions.push('<button class="btn btn-primary" style="padding:8px 16px;font-size:13px;" onclick="setAppointmentStatus(\'' + esc(a.id) + '\', \'confirmed\')"><i class="fas fa-check"></i> تأكيد</button>');
+    }
+    if (status !== 'done') {
+      actions.push('<button class="btn btn-dark" style="padding:8px 16px;font-size:13px;" onclick="setAppointmentStatus(\'' + esc(a.id) + '\', \'done\')"><i class="fas fa-flag-checkered"></i> منجز</button>');
+    }
+    if (status !== 'cancelled') {
+      actions.push('<button class="btn btn-outline" style="padding:8px 16px;font-size:13px;" onclick="setAppointmentStatus(\'' + esc(a.id) + '\', \'cancelled\')"><i class="fas fa-ban"></i> إلغاء</button>');
+    }
+    actions.push('<a href="https://wa.me/' + esc(phoneDigits) + '?text=' + waText + '" target="_blank" rel="noopener" class="btn btn-outline" style="padding:8px 16px;font-size:13px;"><i class="fab fa-whatsapp"></i> واتساب</a>');
+    actions.push('<button class="icon-btn delete" onclick="removeAppointment(\'' + esc(a.id) + '\')" title="حذف"><i class="fas fa-trash"></i></button>');
+
+    return '<div class="appointment-card status-' + esc(status) + '">' +
+      '<div class="appointment-head">' +
+        '<h4>' + esc(a.name || 'بدون اسم') + ' <span class="status-badge status-' + esc(status) + '">' + esc(label) + '</span></h4>' +
+        '<span style="color:var(--gray);font-size:12.5px;">أُضيف: ' + esc(adminFormatDate(a.createdAt)) + '</span>' +
+      '</div>' +
+      '<div class="appointment-when">' +
+        '<span><i class="fas fa-calendar"></i> ' + esc(adminFormatDate(a.date)) + '</span>' +
+        '<span><i class="fas fa-clock"></i> ' + esc(a.time || '') + '</span>' +
+        '<span><i class="fas fa-tools"></i> ' + esc(a.service || '-') + '</span>' +
+        '<span><i class="fas fa-phone"></i> <span dir="ltr">' + esc(a.phone || '') + '</span></span>' +
+      '</div>' +
+      (a.notes ? '<div class="appointment-notes">' + esc(a.notes) + '</div>' : '') +
+      '<div class="appointment-actions">' + actions.join('') + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+async function setAppointmentStatus(id, status) {
+  try {
+    await updateAppointmentStatus(id, status);
+    showToast('تم تحديث حالة الموعد: ' + (APPOINTMENT_STATUS[status] || status), 'success');
+    loadAppointments();
+    checkPendingAppointments();
+    loadDashboard();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
+}
+
+async function removeAppointment(id) {
+  if (!confirm('حذف هذا الموعد نهائياً؟')) return;
+  try {
+    await deleteAppointment(id);
+    showToast('تم حذف الموعد', 'success');
+    loadAppointments();
+    checkPendingAppointments();
+    loadDashboard();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
+}
+
+async function checkPendingAppointments() {
+  try {
+    const items = await getAppointments();
+    const pending = items.filter(function (a) { return a.status === 'pending'; }).length;
+    const badge = $('aptBadge');
+    if (badge && pending > 0) {
+      badge.textContent = pending;
+      badge.style.display = 'inline-block';
+    }
+  } catch (err) {
+    console.warn('تعذر تحديث شارة المواعيد:', err);
+  }
+}
+
+// ============================
+// الرسائل
+// ============================
+async function loadMessagesTab() {
+  const container = $('messagesContainer');
+  if (!container) return;
   container.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</p>';
-  const messages = await getMessages();
-  if(messages.length === 0){
+
+  let messages = [];
+  try {
+    messages = await getMessages();
+  } catch (err) {
+    container.innerHTML = '<p style="color:#dc2626;">' + esc(firebaseErrorMessage(err)) + '</p>';
+    return;
+  }
+
+  if (!messages.length) {
     container.innerHTML = '<p style="text-align:center;color:var(--gray);padding:40px;">لا توجد رسائل بعد</p>';
     return;
   }
-  container.innerHTML = messages.map(m=>`
-    <div class="msg-card ${m.read ? '' : 'unread'}">
-      <h4>${m.name} ${m.read ? '' : '<span class="badge badge-draft">جديد</span>'}</h4>
-      <div class="msg-meta">
-        <span><i class="fas fa-phone"></i> ${m.phone}</span>
-        <span><i class="fas fa-tag"></i> ${m.service||'-'}</span>
-        <span><i class="fas fa-calendar"></i> ${m.date ? new Date(m.date).toLocaleDateString('ar-SA') : ''}</span>
-      </div>
-      <p>${m.message || 'لا توجد تفاصيل إضافية'}</p>
-      <div style="display:flex;gap:10px;">
-        <a href="https://wa.me/${m.phone.replace(/[^0-9]/g,'')}" target="_blank" class="btn btn-primary" style="padding:8px 18px;font-size:13px;"><i class="fab fa-whatsapp"></i> رد عبر واتساب</a>
-        ${!m.read ? `<button class="btn btn-dark" style="padding:8px 18px;font-size:13px;" onclick="markRead('${m.id}')">تمييز كمقروء</button>` : ''}
-        <button class="icon-btn delete" onclick="removeMessage('${m.id}')"><i class="fas fa-trash"></i></button>
-      </div>
-    </div>
-  `).join('');
+
+  container.innerHTML = messages.map(function (m) {
+    const phoneDigits = String(m.phone || '').replace(/[^0-9]/g, '');
+    return '<div class="msg-card ' + (m.read ? '' : 'unread') + '">' +
+      '<h4>' + esc(m.name) + ' ' + (m.read ? '' : '<span class="badge badge-draft">جديد</span>') + '</h4>' +
+      '<div class="msg-meta">' +
+        '<span><i class="fas fa-phone"></i> ' + esc(m.phone) + '</span>' +
+        '<span><i class="fas fa-tag"></i> ' + esc(m.service || '-') + '</span>' +
+        '<span><i class="fas fa-calendar"></i> ' + esc(m.date || '') + '</span>' +
+      '</div>' +
+      '<p>' + (esc(m.message) || 'لا توجد تفاصيل إضافية') + '</p>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+        '<a href="https://wa.me/' + esc(phoneDigits) + '" target="_blank" rel="noopener" class="btn btn-primary" style="padding:8px 18px;font-size:13px;"><i class="fab fa-whatsapp"></i> رد عبر واتساب</a>' +
+        (m.read ? '' : '<button class="btn btn-dark" style="padding:8px 18px;font-size:13px;" onclick="markRead(\'' + esc(m.id) + '\')">تمييز كمقروء</button>') +
+        '<button class="icon-btn delete" onclick="removeMessage(\'' + esc(m.id) + '\')" title="حذف"><i class="fas fa-trash"></i></button>' +
+      '</div></div>';
+  }).join('');
 }
 
-async function markRead(id){ await markMessageRead(id); loadMessagesTab(); checkUnreadMessages(); }
-async function removeMessage(id){ if(confirm('حذف هذه الرسالة؟')){ await deleteMessage(id); loadMessagesTab(); checkUnreadMessages(); } }
-
-// ============== BACKUP ==============
-async function exportData(){
-  const articles = await getArticles();
-  const blob = new Blob([JSON.stringify(articles,null,2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download=`alemtiaz-articles-${Date.now()}.json`; a.click();
+async function markRead(id) {
+  try {
+    await markMessageRead(id);
+    loadMessagesTab();
+    checkUnreadMessages();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
 }
 
-function importData(event){
+async function removeMessage(id) {
+  if (!confirm('حذف هذه الرسالة؟')) return;
+  try {
+    await deleteMessage(id);
+    loadMessagesTab();
+    checkUnreadMessages();
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
+}
+
+// ============================
+// النسخ الاحتياطي
+// ============================
+async function exportData() {
+  try {
+    const [articles, services] = await Promise.all([getArticles(), getServices()]);
+    const payload = { exportedAt: new Date().toISOString(), articles: articles, services: services };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'alemtiaz-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    showToast('تم تصدير النسخة الاحتياطية', 'success');
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  }
+}
+
+function importData(event) {
   const file = event.target.files[0];
-  if(!file) return;
+  if (!file) return;
+
   const reader = new FileReader();
-  reader.onload = async function(e){
-    try{
-      const imported = JSON.parse(e.target.result);
-      for(const art of imported){
-        const { id, createdAt, ...data } = art;
+  reader.onload = async function (e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const articles = Array.isArray(parsed) ? parsed : (parsed.articles || []);
+      if (!articles.length) throw new Error('لا توجد مقالات في الملف');
+
+      let count = 0;
+      for (const art of articles) {
+        const data = Object.assign({}, art);
+        delete data.id;
+        delete data.createdAt;
         await addArticle(data);
+        count++;
       }
-      alert('تم الاستيراد بنجاح ✅');
-      loadArticlesTable(); loadDashboard();
-    }catch(err){ alert('ملف غير صالح'); }
+      showToast('تم استيراد ' + count + ' مقال', 'success');
+      loadArticlesTable();
+      loadDashboard();
+    } catch (err) {
+      showToast('ملف غير صالح: ' + err.message, 'error');
+    } finally {
+      event.target.value = '';
+    }
   };
   reader.readAsText(file);
 }
 
-function logout(){ auth.signOut().then(()=> window.location.href='login.html'); }
-
+// ============================
+// الخروج
+// ============================
+function logout() {
+  auth.signOut().then(function () { window.location.replace('login.html'); });
+}

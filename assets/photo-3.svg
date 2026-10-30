@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="إضاءة LED احترافية من الممتاز">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0D1B2A"/>
+      <stop offset="1" stop-color="#1B3A5C"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="34%" r="46%">
+      <stop offset="0" stop-color="#FFC107" stop-opacity=".55"/>
+      <stop offset="55%" stop-color="#FFC107" stop-opacity=".12"/>
+      <stop offset="100%" stop-color="#FFC107" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD54F" stop-opacity=".38"/>
+      <stop offset="100%" stop-color="#FFD54F" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFD54F"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M60 0H0V60" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#grid)"/>
+  <rect width="1200" height="675" fill="url(#glow)"/>
+
+  <!-- ضوء الإضاءة -->
+  <path d="M600 205 L330 640 H870 Z" fill="url(#cone)"/>
+
+  <!-- نجفة معلقة -->
+  <g stroke="url(#gold)" stroke-width="5" fill="none" stroke-linecap="round">
+    <path d="M600 40 V150"/>
+    <path d="M540 175 h120"/>
+    <path d="M540 175 l-26 30 h52 z" fill="url(#gold)" stroke="none"/>
+    <path d="M660 175 l-26 30 h52 z" fill="url(#gold)" stroke="none"/>
+    <path d="M600 150 a28 28 0 0 1 0 56 a28 28 0 0 1 0 -56z"/>
+  </g>
+  <circle cx="600" cy="238" r="10" fill="#FFE98A"/>
+
+  <!-- خطوط أرضية -->
+  <path d="M180 640 H1020" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
+  <path d="M420 640 v-40 h120 v40" stroke="rgba(255,193,7,.35)" stroke-width="3" fill="none"/>
+  <path d="M700 640 v-70 h140 v70" stroke="rgba(255,193,7,.25)" stroke-width="3" fill="none"/>
+
+  <!-- عنوان -->
+  <text x="1130" y="600" text-anchor="end" font-family="'Tajawal','Segoe UI',Tahoma,Arial,sans-serif" font-size="46" font-weight="800" fill="#ffffff">إضاءة LED</text>
+  <text x="1130" y="638" text-anchor="end" font-family="'Tajawal','Segoe UI',Tahoma,Arial,sans-serif" font-size="24" font-weight="600" fill="#FFC107">توفير في الطاقة وتوزيع إضاءة مدروس</text>
+</svg>

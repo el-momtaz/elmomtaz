@@ -7,7 +7,7 @@
 <meta name="description" content="شركة الممتاز الرائدة في جميع الأعمال الكهربائية بجازان والمناطق المجاورة، تأسيس وتشطيب كهرباء منازل وفلل ومنشآت بأعلى جودة وأسعار منافسة. اتصل الآن: 966508980434+">
 <meta name="keywords" content="كهربائي جازان, تأسيس كهرباء جازان, تشطيب كهرباء, شركة كهرباء جازان, فني كهربائي منازل, الممتاز للكهرباء">
 <meta name="author" content="شركة الممتاز للأعمال الكهربائية">
-<link rel="canonical" href="https://el-momtaz.github.io/elmomtaz/">
+<link rel="canonical" href="index.html">
 
 <meta property="og:title" content="شركة الممتاز للأعمال الكهربائية - جازان">
 <meta property="og:description" content="تأسيس وتشطيب جميع الأعمال الكهربائية في جازان والمناطق المجاورة">
@@ -16,6 +16,8 @@
 <meta property="og:image" content="assets/logo.svg">
 
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D1B2A">
 <link rel="stylesheet" href="css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -42,11 +44,12 @@
       <a href="index.html" class="active">الرئيسية</a>
       <a href="about.html">من نحن</a>
       <a href="services.html">خدماتنا</a>
+      <a href="booking.html">حجز موعد</a>
       <a href="articles.html">المقالات</a>
       <a href="contact.html">اتصل بنا</a>
     </nav>
-    <a href="tel:+966508980434" class="nav-phone"><i class="fas fa-phone"></i> 0508980434</a>
-    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> <span data-dynamic="phone-text">0508980434</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="القائمة"><i class="fas fa-bars"></i></button>
   </div>
 </header>
 
@@ -57,7 +60,8 @@
     <p id="heroDescription">شركة الممتاز تقدم جميع الأعمال الكهربائية بأعلى معايير الجودة والسلامة.</p>
     <div class="hero-buttons">
       <a href="tel:+966508980434" data-dynamic="phone-link" class="btn btn-primary"><i class="fas fa-phone"></i> اتصل الآن</a>
-      <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" target="_blank" class="btn btn-outline"><i class="fab fa-whatsapp"></i> واتساب</a>
+      <a href="booking.html" class="btn btn-accent"><i class="fas fa-calendar-check"></i> احجز موعد</a>
+      <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" target="_blank" rel="noopener" class="btn btn-outline"><i class="fab fa-whatsapp"></i> واتساب</a>
     </div>
     <div class="hero-stats" id="heroStats">
       <div class="stat-box"><h3>+500</h3><p>مشروع منجز</p></div>
@@ -76,13 +80,14 @@
       <p>نقدم كافة الخدمات الكهربائية للمنازل والفلل والمنشآت التجارية بجازان والمناطق المجاورة</p>
     </div>
     <div class="services-grid" id="homeServicesGrid"></div>
+    <div class="section-more"><a href="services.html" class="btn btn-dark">كل الخدمات</a></div>
   </div>
 </section>
 
 <section class="why-us section">
   <div class="container why-grid">
     <div>
-      <img class="why-img" src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=800" alt="فريق فني كهربائي">
+      <img class="why-img" src="assets/photo-1.jpg" alt="فريق فني كهربائي أثناء تنفيذ الأعمال">
     </div>
     <div>
       <span style="color:var(--accent);font-weight:700;">لماذا الممتاز؟</span>
@@ -101,13 +106,32 @@
 <section class="section">
   <div class="container">
     <div class="section-title">
+      <span>معرض الأعمال</span>
+      <h2>نماذج من مشاريعنا</h2>
+      <p>صور مختارة من أعمال التأسيس والتشطيب التي نفذناها في جازان</p>
+    </div>
+    <div class="gallery-grid" id="homeGalleryGrid"></div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--white);">
+  <div class="container">
+    <div class="section-title">
+      <span>آراء العملاء</span>
+      <h2>ماذا يقول عملاؤنا</h2>
+    </div>
+    <div class="testimonials-grid" id="homeTestimonialsGrid"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-title">
       <span>مدونتنا</span>
       <h2>أحدث المقالات</h2>
     </div>
     <div class="articles-grid" id="latestArticles"></div>
-    <div style="text-align:center;margin-top:40px;">
-      <a href="articles.html" class="btn btn-dark">عرض جميع المقالات</a>
-    </div>
+    <div class="section-more"><a href="articles.html" class="btn btn-dark">عرض جميع المقالات</a></div>
   </div>
 </section>
 
@@ -115,20 +139,21 @@
   <div class="container">
     <h2>هل لديك مشروع كهربائي؟</h2>
     <p>تواصل معنا الآن واحصل على استشارة مجانية وعرض سعر فوري</p>
-    <a href="https://wa.me/966508980434" class="btn btn-dark"><i class="fab fa-whatsapp"></i> تواصل عبر واتساب</a>
+    <a href="booking.html" class="btn btn-primary"><i class="fas fa-calendar-check"></i> احجز موعد زيارة</a>
+    <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="btn btn-dark" style="margin-right:10px;" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> تواصل عبر واتساب</a>
   </div>
 </section>
 
 <footer>
   <div class="container footer-grid">
     <div class="footer-col">
-      <div class="footer-logo"><img src="assets/logo.svg" alt="الممتاز"></div>
+      <div class="footer-logo"><img src="assets/logo-light.svg" alt="الممتاز"></div>
       <p>شركة الممتاز للأعمال الكهربائية، نقدم خدمات تأسيس وتشطيب كهرباء احترافية في جازان والمناطق المجاورة منذ أكثر من 10 سنوات.</p>
       <div class="social-links">
-        <a href="https://wa.me/966508980434"><i class="fab fa-whatsapp"></i></a>
-        <a href="tel:+966508980434"><i class="fas fa-phone"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
+        <a href="tel:+966508980434" data-dynamic="phone-link" aria-label="هاتف"><i class="fas fa-phone"></i></a>
+        <a href="#" data-dynamic="twitter-link" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+        <a href="#" data-dynamic="instagram-link" aria-label="إنستغرام"><i class="fab fa-instagram"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -151,25 +176,36 @@
     </div>
     <div class="footer-col">
       <h4>تواصل معنا</h4>
-      <p><i class="fas fa-map-marker-alt"></i> جازان، المملكة العربية السعودية</p>
-      <p><i class="fas fa-phone"></i> <a href="tel:+966508980434">966 50 898 0434+</a></p>
-      <p><i class="fas fa-envelope"></i> info@alemtiaz-electric.com</p>
+      <p><i class="fas fa-map-marker-alt"></i> <span data-dynamic="address-text">جازان، المملكة العربية السعودية</span></p>
+      <p><i class="fas fa-phone"></i> <a href="tel:+966508980434" data-dynamic="phone-link"><span data-dynamic="phone-text">+966508980434</span></a></p>
+      <p><i class="fas fa-envelope"></i> <a href="mailto:info@alemtiaz-electric.com" data-dynamic="email-link"><span data-dynamic="email-text">info@alemtiaz-electric.com</span></a></p>
+      <p><i class="fas fa-clock"></i> <span data-dynamic="workhours-text">يومياً من 8 صباحاً حتى 10 مساءً</span></p>
     </div>
   </div>
   <div class="container footer-bottom">
-    <p>© 2024 شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
+    <p>© <span id="footerYear">2026</span> شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
   </div>
 </footer>
 
-<a href="https://wa.me/966508980434" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="whatsapp-float" target="_blank" rel="noopener" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="js/offline-store.js"></script>
 <script src="assets/firebase-config.js"></script>
 <script src="js/site-data.js"></script>
 <script src="js/articles-store.js"></script>
+<script src="js/image-upload.js"></script>
 <script src="js/main.js"></script>
-<script>applySiteSettings(); renderServices('homeServicesGrid', 6); renderArticles('latestArticles', 3);</script>
+<script>
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+  applySiteSettings();
+  renderServices('homeServicesGrid', 6);
+  renderGallery('homeGalleryGrid');
+  renderTestimonials('homeTestimonialsGrid');
+  renderArticles('latestArticles', 3);
+</script>
+<script src="js/icon-fallback.js"></script>
 </body>
 </html>

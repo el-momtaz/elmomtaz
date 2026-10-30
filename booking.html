@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حجز موعد | شركة الممتاز للأعمال الكهربائية - جازان</title>
+<meta name="description" content="احجز موعد معاينة أو زيارة فني كهربائي في جازان خلال دقيقة: اختر الخدمة والتاريخ والوقت المناسب لك من شركة الممتاز.">
+<link rel="canonical" href="booking.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D1B2A">
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header>
+  <div class="container navbar">
+    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="شعار شركة الممتاز للأعمال الكهربائية"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">الرئيسية</a>
+      <a href="about.html">من نحن</a>
+      <a href="services.html">خدماتنا</a>
+      <a href="booking.html" class="active">حجز موعد</a>
+      <a href="articles.html">المقالات</a>
+      <a href="contact.html">اتصل بنا</a>
+    </nav>
+    <a href="tel:+966508980434" data-dynamic="phone-link" class="nav-phone"><i class="fas fa-phone"></i> <span data-dynamic="phone-text">0508980434</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="القائمة"><i class="fas fa-bars"></i></button>
+  </div>
+</header>
+
+<div class="page-header">
+  <div class="container">
+    <h1>حجز موعد</h1>
+    <div class="breadcrumb"><a href="index.html">الرئيسية</a> / <span>حجز موعد</span></div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container booking-layout">
+
+    <div class="booking-form-card">
+      <h2><i class="fas fa-calendar-check"></i> احجز موعد معاينة أو زيارة فني</h2>
+      <p class="booking-sub">املأ البيانات وسنتواصل معك لتأكيد الموعد. الخدمة تستغرق دقيقة واحدة.</p>
+
+      <form id="bookingForm" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bkName">الاسم الكامل <span class="req">*</span></label>
+            <input type="text" id="bkName" maxlength="100" placeholder="مثال: محمد أحمد" autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="bkPhone">رقم الجوال <span class="req">*</span></label>
+            <input type="tel" id="bkPhone" maxlength="30" placeholder="05xxxxxxxx" autocomplete="tel" inputmode="tel">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bkService">نوع الخدمة <span class="req">*</span></label>
+          <select id="bkService">
+            <option value="">اختر الخدمة المطلوبة</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bkDate">التاريخ المطلوب <span class="req">*</span></label>
+          <input type="date" id="bkDate">
+          <small class="field-hint">يمكنك الحجز من اليوم وحتى 60 يوماً قادمة.</small>
+        </div>
+
+        <div class="form-group">
+          <label>الوقت المناسب <span class="req">*</span></label>
+          <div class="slot-grid" id="slotGrid" role="group" aria-label="اختيار الوقت"></div>
+          <small class="field-hint"><i class="fas fa-circle-info"></i> المواعيد من 9 صباحاً حتى 9 مساءً، وستُحذف الأوقات المنتهية تلقائياً اليوم.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="bkNotes">تفاصيل إضافية (اختياري)</label>
+          <textarea id="bkNotes" rows="4" maxlength="1000" placeholder="نوع المبنى، المساحة، الحي، وصف العطل إن وجد..."></textarea>
+        </div>
+
+        <div class="form-message" id="bookingMessage" role="status"></div>
+
+        <button type="submit" class="btn btn-primary booking-submit" id="bookingSubmit">
+          <i class="fas fa-calendar-check"></i> تأكيد الحجز
+        </button>
+        <p class="booking-privacy"><i class="fas fa-lock"></i> بياناتك تُستخدم للتواصل بخصوص الموعد فقط ولا تُنشر على الموقع.</p>
+      </form>
+
+      <div class="booking-success" id="bookingSuccess" hidden>
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h3>تم استلام طلب الحجز</h3>
+        <p>سنتواصل معك لتأكيد الموعد خلال ساعات العمل.</p>
+        <ul class="booking-summary" id="bookingSummary"></ul>
+        <div class="booking-success-actions">
+          <a href="#" id="waConfirm" class="btn btn-primary" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i> إرسال التفاصيل عبر واتساب
+          </a>
+          <button type="button" class="btn btn-outline" id="bookAnother">حجز موعد آخر</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="booking-side">
+      <div class="booking-info-card">
+        <h3>ماذا يحدث بعد الحجز؟</h3>
+        <ol class="booking-steps">
+          <li><span>1</span> نستلم طلبك ونراجعه مع فريق التنفيذ.</li>
+          <li><span>2</span> نتصل بك لتأكيد الموعد النهائي.</li>
+          <li><span>3</span> يصل الفني في الوقت المتفق عليه للمعاينة.</li>
+          <li><span>4</span> تستلم عرض سعر واضحاً بدون التزام.</li>
+        </ol>
+      </div>
+
+      <div class="booking-contact-card">
+        <h3>تفضل الاتصال المباشر؟</h3>
+        <a href="tel:+966508980434" data-dynamic="phone-link" class="booking-contact-row">
+          <i class="fas fa-phone"></i>
+          <span><strong>اتصال</strong><small data-dynamic="phone-text">0508980434</small></span>
+        </a>
+        <a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" target="_blank" rel="noopener" class="booking-contact-row">
+          <i class="fab fa-whatsapp"></i>
+          <span><strong>واتساب</strong><small>رد سريع خلال دقائق</small></span>
+        </a>
+        <div class="booking-contact-row static">
+          <i class="fas fa-clock"></i>
+          <span><strong>ساعات العمل</strong><small data-dynamic="workhours-text">يومياً من 8 صباحاً حتى 10 مساءً</small></span>
+        </div>
+        <div class="booking-contact-row static">
+          <i class="fas fa-map-marker-alt"></i>
+          <span><strong>نطاق الخدمة</strong><small data-dynamic="address-text">جازان والمناطق المجاورة</small></span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-bottom">
+    <p>© <span id="footerYear">2026</span> شركة الممتاز للأعمال الكهربائية - جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+
+<a href="https://wa.me/966508980434" data-dynamic="whatsapp-link" class="whatsapp-float" target="_blank" rel="noopener" aria-label="واتساب"><i class="fab fa-whatsapp"></i></a>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="js/offline-store.js"></script>
+<script src="assets/firebase-config.js"></script>
+<script src="js/site-data.js"></script>
+<script src="js/main.js"></script>
+<script src="js/booking.js"></script>
+<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+<script src="js/icon-fallback.js"></script>
+</body>
+</html>
