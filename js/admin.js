@@ -200,6 +200,8 @@ async function loadDashboard() {
       console.warn('تعذر جلب المواعيد:', err);
     }
 
+    renderSetupBanner(articles.length === 0 && services.length === 0);
+
     const recent = articles.slice(0, 5);
     const table = $('recentArticlesTable');
     if (table) {
@@ -226,6 +228,62 @@ async function checkUnreadMessages() {
     }
   } catch (err) {
     console.warn('تعذر جلب الرسائل:', err);
+  }
+}
+
+// ============================
+// تهيئة المحتوى الافتراضي
+// ============================
+function renderSetupBanner(isEmpty) {
+  const box = $('setupBanner');
+  if (!box) return;
+
+  if (!isEmpty) {
+    box.innerHTML = '';
+    return;
+  }
+
+  box.innerHTML =
+    '<div class="setup-banner">' +
+      '<div class="setup-banner-text">' +
+        '<h3><i class="fas fa-circle-exclamation"></i> قاعدة البيانات فارغة</h3>' +
+        '<p>لم تُضف أي خدمات أو مقالات بعد. اضغط الزر ليتم تعبئة الموقع بمحتوى جاهز (إعدادات + 6 خدمات + 3 مقالات + آراء + معرض) يمكنك تعديله لاحقاً.</p>' +
+      '</div>' +
+      '<button class="btn btn-primary" onclick="runSeed(this)"><i class="fas fa-wand-magic-sparkles"></i> تهيئة المحتوى</button>' +
+    '</div>';
+}
+
+async function runSeed(btn) {
+  if (!confirm('سيتم إضافة محتوى افتراضي إلى المجموعات الفارغة فقط. هل تريد المتابعة؟')) return;
+
+  const original = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التهيئة...'; }
+
+  try {
+    const result = await seedInitialContent();
+    const a = result.added;
+    const total = a.settings + a.services + a.articles + a.testimonials + a.gallery;
+
+    if (total === 0 && result.errors.length === 0) {
+      showToast('كل المجموعات تحتوي بيانات بالفعل — لا شيء ليُضاف', 'success');
+    } else {
+      showToast('تمت التهيئة: ' + a.services + ' خدمة، ' + a.articles + ' مقال، ' +
+        (a.testimonials + a.gallery + a.settings) + ' عنصر إضافي', 'success');
+    }
+
+    if (result.errors.length) {
+      console.warn('أخطاء التهيئة:', result.errors);
+      showToast('بعض العناصر لم تُضف: ' + result.errors[0], 'error');
+    }
+  } catch (err) {
+    showToast(firebaseErrorMessage(err), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = original || '<i class="fas fa-wand-magic-sparkles"></i> تهيئة المحتوى'; }
+    loadDashboard();
+    loadServicesTable();
+    loadArticlesTable();
+    loadTestimonialsTable();
+    loadGalleryManage();
   }
 }
 

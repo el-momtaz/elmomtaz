@@ -38,6 +38,7 @@
     <!-- Dashboard -->
     <div class="tab-content" id="tab-dashboard">
       <div class="admin-topbar"><h1>لوحة البيانات</h1></div>
+      <div id="setupBanner"></div>
       <div class="admin-cards">
         <div class="admin-stat"><h3 id="statTotal">0</h3><p><i class="fas fa-newspaper"></i> إجمالي المقالات</p></div>
         <div class="admin-stat"><h3 id="statPublished">0</h3><p><i class="fas fa-check-circle"></i> منشورة</p></div>
@@ -341,6 +342,15 @@
     <!-- Backup -->
     <div class="tab-content" id="tab-backup" style="display:none;">
       <div class="admin-topbar"><h1>النسخ الاحتياطي</h1></div>
+      <div class="editor-card" style="margin-bottom:25px;">
+        <h3 style="margin-bottom:12px;color:var(--primary);"><i class="fas fa-wand-magic-sparkles" style="color:var(--accent-dark);"></i> تهيئة المحتوى الافتراضي</h3>
+        <p style="color:var(--gray);font-size:14px;line-height:1.8;margin-bottom:16px;">
+          يضيف الإعدادات و6 خدمات و3 مقالات و3 آراء عملاء و3 صور للمعرض — لتظهر صفحة كاملة بدل صفحة فارغة.
+          لا يحذف أي بيانات موجودة، ويكتب فقط في المجموعات الفارغة. يمكنك تعديل أو حذف كل عنصر بعد ذلك.
+        </p>
+        <button class="btn btn-primary" onclick="runSeed(this)"><i class="fas fa-wand-magic-sparkles"></i> تهيئة المحتوى الآن</button>
+      </div>
+
       <div class="editor-card">
         <h3 style="margin-bottom:20px;color:var(--primary);">تصدير/استيراد المقالات</h3>
         <div style="display:flex;gap:15px;">

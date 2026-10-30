@@ -3,8 +3,6 @@
   خريطة الموقع.
   لضبط النطاق في كل الملفات مرة واحدة شغّل:
       python3 set-domain.py https://your-domain.com
-  ويُفضّل إضافة رابط كل خدمة جديدة بالشكل:
-      <url><loc>https://your-domain.com/service.html?slug=اسم-الخدمة</loc></url>
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>

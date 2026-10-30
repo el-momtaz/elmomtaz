@@ -335,3 +335,128 @@ async function updateAppointmentStatus(id, status){
 async function deleteAppointment(id){
   await appointmentsCollection.doc(id).delete();
 }
+
+// ============================
+// المحتوى الافتراضي + تهيئة أولية بضغطة واحدة
+// (تُستخدم فقط عندما تكون قاعدة البيانات فارغة)
+// ============================
+
+const SEED_ARTICLES = [
+  {
+    title: 'دليلك لتأسيس كهرباء الفيلا من الصفر',
+    image: 'assets/photo-1.jpg',
+    category: 'تأسيس',
+    status: 'published',
+    author: 'فريق الممتاز',
+    excerpt: 'خطوات التأسيس الصحيحة تساوي نصف نجاح المشروع: من قراءة المخطط إلى ترقيم الدوائر وأخذ قياسات الأرضي.',
+    content: '<p>تأسيس الكهرباء مرحلة لا تتكرر بسهولة، لذلك أي خطأ فيها يتحول إلى تكسير وترميم لاحق.</p><h3>1. اقرأ المخطط قبل أول ماسورة</h3><p>حدّد مواقع الأفياش والمفاتيح ومكيفات السبليت وأحمال المطبخ من المخطط.</p><h3>2. وزّع الأحمال على أكثر من دائرة</h3><p>لا تضع أجهزة المطبخ الثقيلة مع إضاءة المجلس على نفس القاطع.</p><h3>3. الترقيم والتوثيق</h3><p>اطلب ترقيم كل دائرة على اللوحة، وتصوير المسارات قبل اللياسة.</p><h3>4. الاختبار قبل التشطيب</h3><p>قياس مقاومة العزل ونقطة الأرضي قبل الإغلاق يكشف أي تلف مبكراً.</p>'
+  },
+  {
+    title: 'القاطع التفاضلي: لماذا يفصل المفتاح المضاد للصعق؟',
+    image: 'assets/photo-2.jpg',
+    category: 'صيانة',
+    status: 'published',
+    author: 'فريق الممتاز',
+    excerpt: 'أسباب فصل القاطع التفاضلي المتكرر، وطريقة الفحص الصحيحة خطوة بخطوة.',
+    content: '<p>القاطع التفاضلي يحمي الإنسان من تسرب التيار، لكن فصله المتكرر له أسباب محددة.</p><h3>الأسباب الشائعة</h3><ul><li>ربط الأرضي مع الحيادي في نفس النقطة.</li><li>رطوبة أو تلف عزل أحد الدوائر الخارجية.</li><li>خطأ في ربط القاطع على الأطوار.</li></ul><p>الفحص الصحيح يكون بفصل الدوائر واحدة تلو الأخرى حتى يظهر القاطع المتسبب.</p>'
+  },
+  {
+    title: 'نصائح لتوفير فاتورة الكهرباء في الصيف',
+    image: 'assets/photo-3.svg',
+    category: 'نصائح عامة',
+    status: 'published',
+    author: 'فريق الممتاز',
+    excerpt: 'إضاءة LED، عزل الفتحات، وضبط المكيف درجة واحدة قد تكفي لتخفيض الفاتورة بشكل واضح.',
+    content: '<p>توفير الكهرباء لا يحتاج تكلفة كبيرة، بل تنظيم خطوات صغيرة:</p><ul><li>افحص السخانات وحرارتها.</li><li>وزّع الأحمال على القواطع.</li><li>استبدل الهالوجين بـ LED.</li><li>اطلب فحصاً دورياً للتوصيلات غير المحكمة.</li></ul>'
+  }
+];
+
+const SEED_TESTIMONIALS = [
+  { name: 'أبو محمد الجابري', role: 'صاحب فيلا - صبيا', rating: 5, text: 'أسلموا المشروع في الوقت، والفرق في الترتيب والنظافة واضح مقارنة بالمقاول السابق.' },
+  { name: 'منى الشريف', role: 'عميلة - جازان', rating: 5, text: 'تواصلت لحل التماس كهربائي، تحديد العطل كان سريعاً والسعر واضحاً قبل البدء.' },
+  { name: 'خالد عسيري', role: 'مدير منشأة - أبو عريش', rating: 4, text: 'خبرة ملحوظة في لوحات التوزيع، ووعدونا بتقرير مكتوب وقدموه فعلاً.' }
+];
+
+const SEED_GALLERY = [
+  { title: 'لوحة توزيع موقع بصبيا', image: 'assets/photo-2.jpg' },
+  { title: 'تأسيس فيلا بجازان', image: 'assets/photo-1.jpg' },
+  { title: 'تشطيب إضاءة مجلس', image: 'assets/photo-3.svg' }
+];
+
+function isoDaysAgo(days) {
+  const d = new Date(Date.now() - days * 86400000);
+  return d.toISOString().slice(0, 10);
+}
+
+/**
+ * تعبئة قاعدة البيانات بمحتوى جاهز (مرة واحدة فقط).
+ * لا تحذف أي بيانات موجودة: كل مجموعة تُعبّأ فقط إذا كانت فارغة.
+ * @returns {Promise<Object>} عدد المستندات المضافة لكل مجموعة
+ */
+async function seedInitialContent() {
+  const stamp = () => firebase.firestore.FieldValue.serverTimestamp();
+  const added = { settings: 0, services: 0, articles: 0, testimonials: 0, gallery: 0 };
+  const errors = [];
+
+  // 1) الإعدادات
+  try {
+    const doc = await settingsDoc.get();
+    if (!doc.exists) {
+      await settingsDoc.set(DEFAULT_SETTINGS, { merge: true });
+      added.settings = 1;
+    }
+  } catch (e) { errors.push('الإعدادات: ' + firebaseErrorMessage(e)); }
+
+  // 2) الخدمات
+  try {
+    const snap = await servicesCollection.limit(1).get();
+    if (snap.empty) {
+      for (let i = 0; i < DEMO_SERVICES.length; i++) {
+        const { id, ...rest } = DEMO_SERVICES[i];
+        await servicesCollection.add(Object.assign({}, rest, {
+          order: rest.order || i + 1,
+          createdAt: stamp()
+        }));
+        added.services++;
+      }
+    }
+  } catch (e) { errors.push('الخدمات: ' + firebaseErrorMessage(e)); }
+
+  // 3) المقالات
+  try {
+    const snap = await db.collection('articles').limit(1).get();
+    if (snap.empty) {
+      for (let i = 0; i < SEED_ARTICLES.length; i++) {
+        await db.collection('articles').add(Object.assign({}, SEED_ARTICLES[i], {
+          date: isoDaysAgo(i * 7 + 2),
+          createdAt: stamp()
+        }));
+        added.articles++;
+      }
+    }
+  } catch (e) { errors.push('المقالات: ' + firebaseErrorMessage(e)); }
+
+  // 4) آراء العملاء
+  try {
+    const snap = await testimonialsCollection.limit(1).get();
+    if (snap.empty) {
+      for (const item of SEED_TESTIMONIALS) {
+        await testimonialsCollection.add(Object.assign({}, item, { image: '', createdAt: stamp() }));
+        added.testimonials++;
+      }
+    }
+  } catch (e) { errors.push('آراء العملاء: ' + firebaseErrorMessage(e)); }
+
+  // 5) معرض الأعمال
+  try {
+    const snap = await galleryCollection.limit(1).get();
+    if (snap.empty) {
+      for (const item of SEED_GALLERY) {
+        await galleryCollection.add(Object.assign({}, item, { createdAt: stamp() }));
+        added.gallery++;
+      }
+    }
+  } catch (e) { errors.push('المعرض: ' + firebaseErrorMessage(e)); }
+
+  return { added, errors };
+}

@@ -719,3 +719,14 @@ a.service-card:focus-visible{outline:3px solid var(--accent-dark);outline-offset
   .nav-links{gap:20px;}
   .nav-links a{font-size:14px;}
 }
+
+/* ---------- بانر التهيئة الأولى في لوحة التحكم ---------- */
+.setup-banner{
+  display:flex;gap:22px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1.5px solid #FCD34D;
+  border-radius:14px;padding:22px 26px;margin-bottom:26px;
+}
+.setup-banner-text{flex:1;min-width:260px;}
+.setup-banner h3{color:#92400E;font-size:17px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.setup-banner p{color:#92400E;font-size:13.5px;line-height:1.8;opacity:.9;}
+.setup-banner .btn{flex-shrink:0;}

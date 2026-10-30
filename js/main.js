@@ -86,6 +86,41 @@ async function applySiteSettings() {
   return s;
 }
 
+
+// تحديث وسم meta (يدعم name و property) — لوسوم المشاركة
+function setMetaContent(key, value) {
+  if (!value) return;
+  let el = document.querySelector('meta[property="' + key + '"], meta[name="' + key + '"]');
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(key.indexOf(':') > -1 ? 'property' : 'name', key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', value);
+}
+
+// تعيين صورة المشاركة مع إزالة الأبعاد الثابتة عند استخدام صورة محتوى
+function setOgImage(url, alt) {
+  if (!url) return;
+  const abs = new URL(url, window.location.href).href;
+  setMetaContent('og:image', abs);
+  setMetaContent('twitter:image', abs);
+  if (alt) setMetaContent('og:image:alt', alt);
+  document.querySelectorAll('meta[property="og:image:width"], meta[property="og:image:height"]').forEach(m => m.remove());
+}
+
+// حقن بيانات منظمة JSON-LD أو تحديثها
+function setJsonLd(id, data) {
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = id;
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(data);
+}
+
 // ==========================================
 // الخدمات
 // ==========================================
@@ -260,6 +295,36 @@ async function loadSingleArticle() {
   if (titleTag) titleTag.textContent = pageTitle;
   const descTag = document.getElementById('pageDesc');
   if (descTag) descTag.setAttribute('content', article.excerpt || '');
+
+  // ===== وسوم المشاركة + بيانات منظمة للمقال =====
+  const canonical = window.location.href.split('#')[0];
+  setMetaContent('og:type', 'article');
+  setMetaContent('og:title', pageTitle);
+  setMetaContent('og:description', article.excerpt || '');
+  setOgImage(article.image, article.title);
+  setMetaContent('og:url', canonical);
+  setMetaContent('twitter:title', pageTitle);
+  setMetaContent('twitter:description', article.excerpt || '');
+  setMetaContent('article:published_time', article.date || '');
+  const canonLink = document.querySelector('link[rel="canonical"]');
+  if (canonLink) canonLink.setAttribute('href', canonical);
+
+  setJsonLd('schemaArticle', {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt || '',
+    image: article.image ? [new URL(article.image, window.location.href).href] : [],
+    datePublished: article.date || undefined,
+    dateModified: article.date || undefined,
+    author: { '@type': 'Organization', name: article.author || 'شركة الممتاز للأعمال الكهربائية' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'شركة الممتاز للأعمال الكهربائية',
+      logo: { '@type': 'ImageObject', url: new URL('assets/logo.svg', window.location.href).href }
+    },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }
+  });
 
   const shareUrl = encodeURIComponent(window.location.href);
   const shareText = encodeURIComponent(article.title || '');

@@ -88,63 +88,99 @@ python3 -m http.server 8000
 
 ```javascript
 rules_version = '2';
+
+// ============================================================
+// قواعد أمان Firestore — موقع شركة الممتاز للأعمال الكهربائية
+// ------------------------------------------------------------
+// قبل النشر:
+//   1) استبدل PUT_ADMIN_UID_HERE بمعرّف UID لحساب المشرف
+//      (Firebase → Authentication → Users → UID)
+//   2) اضغط Publish في تبويب Rules
+//
+// ملاحظة مهمة: "service" كلمة محجوزة في لغة القواعد، لذلك
+// تُقرأ دائماً بهذه الصيغة: data['service']  (بأقواس مربعة)
+// ============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ---------- دوال مساعدة ----------
     function isAdmin() {
-      return request.auth != null && request.auth.uid == 'PUT_ADMIN_UID_HERE';
+      return request.auth != null
+        && request.auth.uid == 'PUT_ADMIN_UID_HERE';
     }
 
-    match /articles/{articleId} {
-      allow read: if (resource.data.status == 'published' || isAdmin());
+    // التحقق من أن الحقل نصّي وبطول مسموح
+    function isStr(value, maxLen) {
+      return value is string && value.size() <= maxLen;
+    }
+
+    // ---------- محتوى عام: قراءة للجميع، كتابة للمشرف ----------
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /services/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /testimonials/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /gallery/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ---------- المقالات ----------
+    // المنشور فقط يُقرأ للزوار، والمسودات للمشرف
+    match /articles/{docId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
       allow create, update, delete: if isAdmin();
     }
 
-    match /settings/{settingId} {
-      allow read: if true;
-      allow write: if isAdmin();
+    // ---------- رسائل التواصل ----------
+    match /messages/{docId} {
+      allow create: if isStr(request.resource.data.name, 100)
+        && isStr(request.resource.data.phone, 30)
+        && isStr(request.resource.data['service'], 100)
+        && isStr(request.resource.data.message, 2000);
+      allow read, update, delete: if isAdmin();
     }
 
-    match /services/{serviceId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /testimonials/{testimonialId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /gallery/{itemId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /appointments/{appointmentId} {
-      // الزائر يستطيع إنشاء طلب حجز فقط، ولا يستطيع قراءة مواعيد الآخرين
-      allow create: if request.resource.data.keys().hasAll(['name', 'phone', 'service', 'date', 'time'])
-        && request.resource.data.keys().hasOnly(['name', 'phone', 'service', 'date', 'time', 'notes', 'status', 'createdAt'])
-        && request.resource.data.name is string && request.resource.data.name.size() <= 100
-        && request.resource.data.phone is string && request.resource.data.phone.size() <= 30
-        && request.resource.data.service is string && request.resource.data.service.size() <= 100
-        && request.resource.data.date is string && request.resource.data.date.size() == 10
-        && request.resource.data.time is string && request.resource.data.time.size() <= 5
-        && request.resource.data.notes is string && request.resource.data.notes.size() <= 1000
+    // ---------- المواعيد ----------
+    // الزائر ينشئ طلباً بحالة pending فقط، ولا يقرأ مواعيد الآخرين
+    match /appointments/{docId} {
+      allow create: if isStr(request.resource.data.name, 100)
+        && isStr(request.resource.data.phone, 30)
+        && isStr(request.resource.data['service'], 100)
+        && isStr(request.resource.data.date, 10)
+        && isStr(request.resource.data.time, 5)
+        && isStr(request.resource.data.get('notes', ''), 1000)
         && request.resource.data.status == 'pending';
       allow read, update, delete: if isAdmin();
     }
 
-    match /messages/{messageId} {
-      allow create: if request.resource.data.keys().hasAll(['name', 'phone', 'service', 'message'])
-        && request.resource.data.keys().hasOnly(['name', 'phone', 'service', 'message', 'read', 'createdAt', 'date'])
-        && request.resource.data.name is string && request.resource.data.name.size() <= 100
-        && request.resource.data.phone is string && request.resource.data.phone.size() <= 30
-        && request.resource.data.service is string && request.resource.data.service.size() <= 100
-        && request.resource.data.message is string && request.resource.data.message.size() <= 2000;
-      allow read, update, delete: if isAdmin();
+    // ---------- أي مسار آخر ----------
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
 ```
+
+> **تنبيه مهم:** `service` كلمة محجوزة في لغة قواعد Firestore، ولا يمكن قراءتها بالصيغة `request.resource.data.service`
+> (تفشل الترجمة بخطأ أحمر). استخدم دائماً `request.resource.data['service']` — كما في القواعد أعلاه.
+
+### أول تسجيل دخول: تهيئة المحتوى
+
+القاعدة الجديدة تكون فارغة. عند فتح **لوحة التحكم** ستظهر رسالة «قاعدة البيانات فارغة» مع زر **تهيئة المحتوى** —
+يضيف (مرة واحدة فقط وفي المجموعات الفارغة): الإعدادات + 6 خدمات + 3 مقالات + 3 آراء عملاء + 3 صور معرض.
+بعدها عدّل النصوص من «إعدادات الموقع» و«الخدمات» وكل عنصر قابل للتعديل أو الحذف.
 
 ### ملاحظات تشغيلية
 

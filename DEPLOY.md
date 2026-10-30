@@ -12,12 +12,16 @@
 
 | الملف | التغيير |
 |---|---|
-| `sitemap.xml` | روابط النطاق الفعلي (6 روابط) |
+| `sitemap.xml` | حُذف رابط `your-domain.com` الوهمي — 6 روابط صحيحة |
 | `robots.txt` | مسار `Disallow` الصحيح + سطر Sitemap |
-| كل ملفات `*.html` (11 صفحة) | `canonical` و`og:url` و`og:image` بروابط مطلقة |
-| `404.html` | صفحة خطأ جديدة تعمل على أي عمق + `<base href="/elmomtaz/">` |
-| `.nojekyll` | جديد — يمنع Jekyll من معالجة الملفات |
-| `login.html` و`admin.html` | بدون canonical (الأصح لصفحات noindex) |
+| `index.html` `about.html` `services.html` `service.html` `booking.html` `articles.html` `article.html` `contact.html` | وسوم المشاركة (OG/Twitter) كاملة + `apple-touch-icon` + بيانات Breadcrumb + عنوان/وصف احتياطي أفضل |
+| `js/main.js` `js/service-page.js` | حقن `Article`/`Service` JSON-LD وتحديث `og:*` و`canonical` تلقائيًا لكل مقال/خدمة |
+| `assets/og-image.jpg` | **جديد** — صورة مشاركة 1200×630 |
+| `assets/apple-touch-icon.png` | **جديد** — أيقونة 180×180 لأجهزة iOS |
+| `.nojekyll` | يمنع Jekyll من معالجة الملفات (إن لم يكن مرفوعًا) |
+| `404.html` | صفحة خطأ تعمل على أي عمق + `<base href="/elmomtaz/">` |
+
+أقل عدد ملفات يكفي لهذا التحديث: **8 صفحات HTML + `js/main.js` + `js/service-page.js` + `sitemap.xml` + `assets/og-image.jpg` + `assets/apple-touch-icon.png`**.
 
 **طريقة التحديث:** افتح المستودع على GitHub → **Add file → Upload files** → اسحب الملفات المذكورة (بنفس المسارات) → **Commit changes** → انتظر 1–2 دقيقة.
 
@@ -72,6 +76,8 @@ python3 set-domain.py https://alemtiaz.pages.dev
 5. **Authentication → Settings → Authorized domains**: أضف نطاق النشر (`alemtiaz.pages.dev` أو دومينك).
 
 > بدون هذه الخطوة: الموقع يعرض بيانات تجريبية تلقائيًا (وضع Demo) لأن Firebase لا يسمح بالكتابة/القراءة.
+
+**بعد أول تسجيل دخول:** إن كانت القاعدة فارغة سيظهر تنبيه «قاعدة البيانات فارغة» في لوحة البيانات — اضغط **تهيئة المحتوى** لإضافة (الإعدادات + 6 خدمات + 3 مقالات + آراء + معرض) بضغطة واحدة.
 
 ---
 

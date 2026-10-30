@@ -45,6 +45,9 @@ async function initServicePage() {
   setAttrIf('ogTitle', 'content', pageTitle);
   setAttrIf('ogDesc', 'content', metaDescription);
   setAttrIf('ogImage', 'content', service.image || SERVICE_PLACEHOLDER);
+  if (service.image) {
+    setOgImage(service.image, service.title);
+  }
   setAttrIf('canonicalLink', 'href', window.location.href.split('?')[0] + '?slug=' + encodeURIComponent(slug));
   setTextIf('breadcrumbCurrent', service.title);
 
@@ -65,6 +68,25 @@ async function initServicePage() {
       image: service.image || SERVICE_PLACEHOLDER
     });
   }
+
+  // ===== بيانات منظمة للفتات (Breadcrumb) =====
+  const pageBase = window.location.href.split('?')[0];
+  const canonicalUrl = pageBase + '?slug=' + encodeURIComponent(slug);
+  setJsonLd('schemaBreadcrumb', {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: pageBase.replace('service.html', 'index.html') },
+      { '@type': 'ListItem', position: 2, name: 'خدماتنا', item: pageBase.replace('service.html', 'services.html') },
+      { '@type': 'ListItem', position: 3, name: service.title, item: canonicalUrl }
+    ]
+  });
+  setMetaContent('og:type', 'website');
+  setMetaContent('twitter:title', pageTitle);
+  setMetaContent('twitter:description', metaDescription);
+  setMetaContent('og:url', canonicalUrl);
+  const canonEl = document.getElementById('canonicalLink');
+  if (canonEl) canonEl.setAttribute('href', canonicalUrl);
 
   // ===== تعبئة المحتوى =====
   titleEl.textContent = service.title;
